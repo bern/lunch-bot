@@ -29,8 +29,11 @@ class LunchBotHandler(object):
         # Given message is an object
         if message['content'] == "reset":
             bot_handler.send_reply(message, "This will wipe all current lunches from my records. If you wish to continue, please type \"reset confirm\".") 
+            return
+            
         if message['content'] == "reset confirm":
             bot_handler.storage.put("lunches", [])
+            return
 
         message_args = message['content'].split()
 
