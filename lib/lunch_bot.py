@@ -6,7 +6,7 @@ from lib import state_handler
 from lib.handlers import delete_plan
 from lib.handlers.help import HelpHandler
 from lib.handlers.make_plan import MakePlanHandler
-from lib.handlers import my_plans
+from lib.handlers.my_plans import MyPlansHandler
 from lib.handlers import rsvp
 from lib.handlers.show_plans import ShowPlansHandler
 from lib.handlers import un_rsvp
@@ -24,6 +24,7 @@ class LunchBotHandler(object):
         self.handlers = {
             "help": HelpHandler(),
             "make-plan": MakePlanHandler(),
+            "my-plans": MyPlansHandler(),
             "show-plans": ShowPlansHandler(),
         }
 
@@ -33,19 +34,6 @@ class LunchBotHandler(object):
         """
 
     def handle_message(self, message):
-        # add your code here
-
-        # bot_handler.send_message(dict(
-        #     type='stream', # can be 'stream' or 'private'
-        #     to=stream_name, # either the stream name or user's email
-        #     subject=subject, # message subject
-        #     content=message, # content of the sent message
-        # ))
-
-        # self.storage.put("foo", "bar")  # set entry "foo" to "bar"
-        # print(self.storage.get("foo"))  # print "bar"
-        # self.storage.contains("foo")
-
         # By default, self.storage accepts any object for keys and values,
         # as long as it is JSON-able. Internally, the object then gets converted
         # to a UTF-8 string.
@@ -91,36 +79,6 @@ class LunchBotHandler(object):
         )
 
         return
-
-        if message_args[0] == "my-plans":
-            if (
-                not (self.storage.contains("lunches"))
-                or len(self.storage.get("lunches")) == 0
-            ):
-                self.send_reply(
-                    message,
-                    "There are no active lunch plans right now! Why not add one using the make-plan command?",
-                )
-            else:
-                current_user = message["display_recipient"]
-
-                reply = "Here are the lunches you've RSVP'd to:\n"
-                lunch_list = self.storage.get("lunches")
-                for i, lunch in enumerate(lunch_list):
-                    if current_user in lunch["rsvps"]:
-                        reply += (
-                            str(i)
-                            + ": "
-                            + lunch["restaurant"]
-                            + " @ "
-                            + lunch["time"]
-                            + ", "
-                            + str(len(lunch["rsvps"]))
-                            + " RSVP(s)\n"
-                        )
-
-                reply = reply.rstrip()
-                self.send_reply(message, reply)
 
         if message_args[0] == "rsvp":
             # less than one arguments (doesnt have message_args[1])
