@@ -19,17 +19,18 @@ class StateHandler:
         self._db = None
 
     def __enter__(self):
-        self.open()
+        return self.open()
         pass
 
     def __exit__(self, type, value, traceback):
         self.close()
 
-    def open(self):
+    def open(self) -> "StateHandler":
         if self.is_open():
             raise self.OPEN_ERROR
 
         self._db = shelve.open(self.SHELVE_DB_FILE, writeback=True)
+        return self
 
     def is_open(self) -> bool:
         return not self._db is None

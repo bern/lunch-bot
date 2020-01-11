@@ -1,3 +1,10 @@
+# Random development things
 venv/
 *.pyc
 .vscode/
+
+# Zulip configuration
+.zuliprc
+
+# Shelve persistence
+lunch-bot.db
