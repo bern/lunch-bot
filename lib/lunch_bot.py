@@ -8,7 +8,7 @@ from lib.handlers.help import HelpHandler
 from lib.handlers.make_plan import MakePlanHandler
 from lib.handlers import my_plans
 from lib.handlers import rsvp
-from lib.handlers import show_plans
+from lib.handlers.show_plans import ShowPlansHandler
 from lib.handlers import un_rsvp
 
 
@@ -24,6 +24,7 @@ class LunchBotHandler(object):
         self.handlers = {
             "help": HelpHandler(),
             "make-plan": MakePlanHandler(),
+            "show-plans": ShowPlansHandler(),
         }
 
     def usage(self):
@@ -90,33 +91,6 @@ class LunchBotHandler(object):
         )
 
         return
-
-        if message_args[0] == "show-plans":
-            if (
-                not (self.storage.contains("lunches"))
-                or len(self.storage.get("lunches")) == 0
-            ):
-                self.send_reply(
-                    message,
-                    "There are no lunch plans to show! Why not add one using the make-plan command?",
-                )
-            else:
-                reply = ""
-                lunches = self.storage.get("lunches")
-                for i, lunch in enumerate(lunches):
-                    reply += (
-                        str(i)
-                        + ": "
-                        + lunch["restaurant"]
-                        + " @ "
-                        + lunch["time"]
-                        + ", "
-                        + str(len(lunch["rsvps"]))
-                        + " RSVP(s)\n"
-                    )
-
-                reply = reply.rstrip()
-                self.send_reply(message, reply)
 
         if message_args[0] == "my-plans":
             if (

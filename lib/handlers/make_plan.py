@@ -24,7 +24,7 @@ class MakePlanHandler(BaseHandler):
 
         plan = {
             "restaurant": args[1],
-            "times": args[2],
+            "time": args[2],
             "rsvps": message["display_recipient"],
         }
 
