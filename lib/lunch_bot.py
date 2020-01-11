@@ -3,6 +3,13 @@ from typing import Dict
 import zulip
 
 from lib import state_handler
+from lib.handlers import delete_plan
+from lib.handlers import help
+from lib.handlers import make_plan
+from lib.handlers import my_plans
+from lib.handlers import rsvp
+from lib.handlers import show_plans
+from lib.handlers import un_rsvp
 
 
 class LunchBotHandler(object):
@@ -74,24 +81,7 @@ class LunchBotHandler(object):
         if message_args[0] == "help":
             self.send_reply(
                 message,
-                """
-            lunch-bot Help
-
-            Available Commands:
-            help - Displays all available commands that lunch-bot understands
-
-            make-plan [restaurant] [time] - Creates a lunch plan for a given place and time. [restaurant] and [time] must not contain any spaces
-
-            show-plans - Shows all active lunch plans along with their associated lunch_id
-
-            rsvp [lunch_id] - RSVPs to a certain lunch plan, given its [lunch_id] (to see every lunch_id, use the show-plans command)
-
-            my-plans - Shows all lunch plans you have currently RSVP'd to
-
-            un-rsvp [lunch_id] - Removes your RSVP from a certain lunch plan, given its [lunch_id] (to see every lunch_id, use the show-plans command)
-
-            delete-plan [lunch_id] - Deletes a certain lunch plan, given its [lunch_id] (to see every lunch_id, use the show-plans command)
-            """,
+                help.run(),
             )
 
         if message_args[0] == "make-plan":
