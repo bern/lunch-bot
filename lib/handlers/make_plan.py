@@ -3,6 +3,9 @@ import zulip
 
 from lib.handlers.base_handler import BaseHandler
 from lib.handlers.base_handler import Message
+from lib.models.message import Message
+from lib.models.plan import Plan
+from lib.models.user import User
 from lib.state_handler import StateHandler
 
 
@@ -22,11 +25,8 @@ class MakePlanHandler(BaseHandler):
             )
             return
 
-        plan = {
-            "restaurant": args[1],
-            "time": args[2],
-            "rsvps": message["display_recipient"],
-        }
+        user = User.get_sender(message)
+        plan = Plan(args[1], args[2], [user])
 
         if not storage.contains("lunches"):
             storage.put("lunches", [])
@@ -38,7 +38,5 @@ class MakePlanHandler(BaseHandler):
         self.send_reply(
             client,
             message,
-            "I have added your plan! Enjoy lunch, {}!".format(
-                message["display_recipient"]
-            ),
+            "I have added your plan! Enjoy lunch, {}!".format(user.full_name),
         )

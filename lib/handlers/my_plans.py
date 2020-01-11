@@ -3,6 +3,8 @@ import zulip
 
 from lib.handlers.base_handler import BaseHandler
 from lib.handlers.base_handler import Message
+from lib.models.message import Message
+from lib.models.user import User
 from lib.state_handler import StateHandler
 
 
@@ -21,18 +23,18 @@ class MyPlansHandler(BaseHandler):
             )
             return
 
-        current_user = message["display_recipient"]
+        user = User.get_sender(message)
         self.send_reply(
             client,
             message,
             "Here are the lunches you've RSVP'd to:\n{}".format(
                 "\n".join(
                     [
-                        "{}: {} @ {}, {}".format(
-                            i, lunch["restaurant"], lunch["time"], len(lunch["rsvps"]),
+                        "{}: {} @ {}, {} RSVP(s)".format(
+                            i, plan.restaurant, plan.time, len(plan.rsvps),
                         )
-                        for i, lunch in enumerate(storage.get("lunches"))
-                        if current_user in lunch["rsvps"]
+                        for i, plan in enumerate(storage.get("lunches"))
+                        if user in plan.rsvps
                     ]
                 )
             ),

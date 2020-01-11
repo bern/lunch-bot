@@ -3,10 +3,8 @@ from typing import Dict
 from typing import List
 import zulip
 
+from lib.models.message import Message
 from lib.state_handler import StateHandler
-
-
-Message = Dict[str, Any]
 
 
 class BaseHandler:

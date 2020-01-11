@@ -27,9 +27,9 @@ class ShowPlansHandler(BaseHandler):
             "\n".join(
                 [
                     "{}: {} @ {}, {} RSVP(s)".format(
-                        i, lunch["restaurant"], lunch["time"], len(lunch["rsvps"]),
+                        i, plan.restaurant, plan.time, len(plan.rsvps),
                     )
-                    for i, lunch in enumerate(storage.get("lunches"))
+                    for i, plan in enumerate(storage.get("lunches"))
                 ]
             ),
         )

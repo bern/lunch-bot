@@ -40,6 +40,7 @@ class LunchBotHandler(object):
 
         # If the bot was the sender of the message, then skip processing the
         # message.
+        # print(self.client.get_profile({"user_id": message["sender_id"]}))
         if message["sender_email"] == self.client.email:
             return
 
