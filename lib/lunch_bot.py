@@ -5,7 +5,7 @@ import zulip
 from lib import state_handler
 from lib.handlers import delete_plan
 from lib.handlers.help import HelpHandler
-from lib.handlers import make_plan
+from lib.handlers.make_plan import MakePlanHandler
 from lib.handlers import my_plans
 from lib.handlers import rsvp
 from lib.handlers import show_plans
@@ -23,6 +23,7 @@ class LunchBotHandler(object):
 
         self.handlers = {
             "help": HelpHandler(),
+            "make-plan": MakePlanHandler(),
         }
 
     def usage(self):
@@ -85,43 +86,10 @@ class LunchBotHandler(object):
             )
 
         self.handlers[message_args[0]].handle_message(
-            self.client, self.storage, message
+            self.client, self.storage, message, message_args,
         )
 
         return
-
-        if message_args[0] == "help":
-            self.send_reply(
-                message, help.run(),
-            )
-
-        if message_args[0] == "make-plan":
-            # less than two arguments (doesnt have message_args[1] or message_args[2])
-            if len(message_args) < 3:
-                self.send_reply(
-                    message,
-                    "Oops! The make-plan command requires more information. Type help for formatting instructions.",
-                )
-                return
-
-            plan = {
-                "restaurant": message_args[1],
-                "time": message_args[2],
-                "rsvps": [message["display_recipient"]],
-            }
-
-            if not (self.storage.contains("lunches")):
-                self.storage.put("lunches", [plan])
-            else:
-                lunch_list = self.storage.get("lunches")
-                lunch_list.append(plan)
-                self.storage.put("lunches", lunch_list)
-            self.send_reply(
-                message,
-                "I have added your plan! Enjoy lunch, {}!".format(
-                    message["display_recipient"]
-                ),
-            )
 
         if message_args[0] == "show-plans":
             if (

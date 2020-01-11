@@ -1,5 +1,6 @@
 from typing import Any
 from typing import Dict
+from typing import List
 import zulip
 
 from lib.state_handler import StateHandler
@@ -14,7 +15,11 @@ class BaseHandler:
     """
 
     def handle_message(
-        self, client: zulip.Client, storage: StateHandler, message: Message,
+        self,
+        client: zulip.Client,
+        storage: StateHandler,
+        message: Message,
+        args: List[str],
     ):
         raise NotImplementedError(
             "handle_message is not implemented in {}".format(self.__class__.__name__)

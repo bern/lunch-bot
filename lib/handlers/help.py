@@ -1,3 +1,4 @@
+from typing import List
 import zulip
 
 from lib.handlers.base_handler import BaseHandler
@@ -26,7 +27,11 @@ Available Commands:
 `delete-plan [lunch_id]` Deletes a certain lunch plan, given its [lunch_id]. To see every lunch_id, use the show-plans command."""
 
     def handle_message(
-        self, client: zulip.Client, storage: StateHandler, message: Message
+        self,
+        client: zulip.Client,
+        storage: StateHandler,
+        message: Message,
+        args: List[str],
     ):
         self.send_reply(
             client, message, self.HELP_MESSAGE,
