@@ -4,7 +4,7 @@ import zulip
 
 from lib import state_handler
 from lib.handlers import delete_plan
-from lib.handlers import help
+from lib.handlers.help import HelpHandler
 from lib.handlers import make_plan
 from lib.handlers import my_plans
 from lib.handlers import rsvp
@@ -20,6 +20,10 @@ class LunchBotHandler(object):
     def __init__(self, client: zulip.Client, storage: state_handler.StateHandler):
         self.client = client
         self.storage = storage
+
+        self.handlers = {
+            "help": HelpHandler(),
+        }
 
     def usage(self):
         return """
@@ -70,7 +74,9 @@ class LunchBotHandler(object):
             )
             return
 
-        if not self.is_valid_command(message_args[0]):
+        if not message_args[0] in self.handlers or not self.is_valid_command(
+            message_args[0]
+        ):
             self.send_reply(
                 message,
                 "Oops! {} is not a valid lunch-bot command! Type help for a list of commands I understand :-)".format(
@@ -78,10 +84,15 @@ class LunchBotHandler(object):
                 ),
             )
 
+        self.handlers[message_args[0]].handle_message(
+            self.client, self.storage, message
+        )
+
+        return
+
         if message_args[0] == "help":
             self.send_reply(
-                message,
-                help.run(),
+                message, help.run(),
             )
 
         if message_args[0] == "make-plan":
@@ -359,22 +370,4 @@ class LunchBotHandler(object):
             "my-plans",
         ]
         return command in commands
-
-    def send_reply(self, original_message: Dict[str, Any], new_message: str):
-        """
-        Given an original message, send a string reply. Uses the metadata from
-        the original message to determine to whom the response should be
-        addressed.
-        """
-        self.client.send_message(
-            {
-                "type": "private",
-                "to": [
-                    recipient["email"]
-                    for recipient in original_message["display_recipient"]
-                    if self.client.email != recipient["email"]
-                ],
-                "content": new_message,
-            }
-        )
 
