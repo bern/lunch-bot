@@ -24,6 +24,8 @@ class LunchBotHandler(object):
         self.client = client
         self.storage = storage
 
+        # TODO: Move these over to pure functions instead? Not sure that we
+        #       need them as classes bc Python has functionds as data.
         self.default_handler = NotACommandHandler()
         self.handlers = {
             "delete-plan": DeletePlanHandler(),

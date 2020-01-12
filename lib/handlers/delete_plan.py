@@ -24,6 +24,8 @@ class DeletePlanHandler(BaseHandler):
             )
             return
 
+        # TODO: Replace occurrences of "lunches" with a constant value that
+        #       defines the name of the lunches/plans table.
         if not storage.contains("lunches") or len(storage.get("lunches")) == 0:
             self.send_reply(
                 client,

@@ -31,6 +31,8 @@ class UnRsvpHandler(BaseHandler):
             )
             return
 
+        # TODO: Change interface from numeric ID to a string ID. Maybe try to
+        #       think about the UX surrounding plans.
         try:
             rsvp_id = int(args[1])
         except ValueError:
