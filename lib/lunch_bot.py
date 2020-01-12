@@ -7,9 +7,12 @@ from lib.handlers.delete_plan import DeletePlanHandler
 from lib.handlers.help import HelpHandler
 from lib.handlers.make_plan import MakePlanHandler
 from lib.handlers.my_plans import MyPlansHandler
+from lib.handlers.not_a_command import NotACommandHandler
+from lib.handlers.reset import ResetHandler
 from lib.handlers.rsvp import RsvpHandler
 from lib.handlers.show_plans import ShowPlansHandler
 from lib.handlers.un_rsvp import UnRsvpHandler
+from lib.models.message import Message
 
 
 class LunchBotHandler(object):
@@ -21,11 +24,13 @@ class LunchBotHandler(object):
         self.client = client
         self.storage = storage
 
+        self.default_handler = NotACommandHandler()
         self.handlers = {
             "delete-plan": DeletePlanHandler(),
             "help": HelpHandler(),
             "make-plan": MakePlanHandler(),
             "my-plans": MyPlansHandler(),
+            "reset": ResetHandler(),
             "rsvp": RsvpHandler(),
             "show-plans": ShowPlansHandler(),
             "un-rsvp": UnRsvpHandler(),
@@ -36,47 +41,33 @@ class LunchBotHandler(object):
         lunch-bot is a bot that helps Recursers organize groups to get lunch! Type help to get started.
         """
 
-    def handle_message(self, message):
-        # By default, self.storage accepts any object for keys and values,
-        # as long as it is JSON-able. Internally, the object then gets converted
-        # to a UTF-8 string.
+    def safe_handle_message(self, message: Message):
+        """
+        A safe wrapper around handle_message that logs all errors, instead of
+        crashing the bot. Useful for running in production where bugs aren't a
+        problem, they're just log entries!
+        """
+        try:
+            self.handle_message(message)
+        except KeyboardInterrupt as e:
+            raise e
+        except Exception as e:
+            print(e)
 
+    def handle_message(self, message: Message):
+        """
+        Handles messages from users on Zulip. Handles the provided command, and
+        responds with the appropriate message.
+
+        Delegates responsibilities to handlers defined in lib.handlers.*
+        """
         # If the bot was the sender of the message, then skip processing the
         # message.
-        # print(self.client.get_profile({"user_id": message["sender_id"]}))
-        if message["sender_email"] == self.client.email:
+        args = message["content"].split()
+        if message["sender_email"] == self.client.email or len(args) == 0:
             return
 
-        # Given message is an object
-        if message["content"] == "reset":
-            self.send_reply(
-                message,
-                'This will wipe all current lunches from my records. If you wish to continue, please type "reset confirm".',
-            )
-            return
-
-        if message["content"] == "reset confirm":
-            self.storage.put("lunches", [])
-            return
-
-        message_args = message["content"].split()
-
-        if len(message_args) == 0:
-            self.send_reply(
-                message,
-                "Oops! You need to provide a lunch-bot command! Type help for a list of commands I understand :-)",
-            )
-            return
-
-        if not message_args[0] in self.handlers:
-            self.send_reply(
-                message,
-                "Oops! {} is not a valid lunch-bot command! Type help for a list of commands I understand :-)".format(
-                    message_args[0]
-                ),
-            )
-
-        self.handlers[message_args[0]].handle_message(
-            self.client, self.storage, message, message_args,
+        self.handlers.get(args[0], self.default_handler).handle_message(
+            self.client, self.storage, message, args
         )
 

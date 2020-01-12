@@ -16,9 +16,13 @@ def main(args: List[str]):
         config_file=path.join(path.abspath(os.getcwd()), ZULIPRC_FILE_NAME)
     )
 
-    with state_handler.StateHandler() as storage:
-        bot = lunch_bot.LunchBotHandler(client, storage)
-        client.call_on_each_message(bot.handle_message)
+    try:
+        with state_handler.StateHandler() as storage:
+            bot = lunch_bot.LunchBotHandler(client, storage)
+            client.call_on_each_message(bot.handle_message)
+    except KeyboardInterrupt:
+        pass
+    print()
 
 
 if __name__ == "__main__":
