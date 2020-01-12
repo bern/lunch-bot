@@ -9,7 +9,7 @@ from lib.handlers.make_plan import MakePlanHandler
 from lib.handlers.my_plans import MyPlansHandler
 from lib.handlers.rsvp import RsvpHandler
 from lib.handlers.show_plans import ShowPlansHandler
-from lib.handlers import un_rsvp
+from lib.handlers.un_rsvp import UnRsvpHandler
 
 
 class LunchBotHandler(object):
@@ -27,6 +27,7 @@ class LunchBotHandler(object):
             "my-plans": MyPlansHandler(),
             "rsvp": RsvpHandler(),
             "show-plans": ShowPlansHandler(),
+            "un-rsvp": UnRsvpHandler(),
         }
 
     def usage(self):
@@ -81,64 +82,6 @@ class LunchBotHandler(object):
         )
 
         return
-
-        if message_args[0] == "un-rsvp" or message_args[0] == "flake":
-            # less than one arguments (doesnt have message_args[1])
-            if len(message_args) < 2:
-                self.send_reply(
-                    message,
-                    "Oops! The un-rsvp command requires more information. Type help for formatting instructions.",
-                )
-                return
-
-            if (
-                not (self.storage.contains("lunches"))
-                or len(self.storage.get("lunches")) == 0
-            ):
-                self.send_reply(
-                    message,
-                    "There are no lunch plans to remove your RSVP from! Why not add one using the make-plan command?",
-                )
-            else:
-                try:
-                    int(message_args[1])
-                except ValueError:
-                    self.send_reply(
-                        message,
-                        "A lunch_id must be a number! Type show-plans to see each lunch_id and its associated lunch plan.",
-                    )
-                    return
-
-                rsvp_id = int(message_args[1])
-                lunch_list = self.storage.get("lunches")
-
-                if rsvp_id >= len(lunch_list) or rsvp_id < 0:
-                    self.send_reply(
-                        message,
-                        "That lunch_id doesn't exist! Type show-plans to see each lunch_id and its associated lunch plan.",
-                    )
-                    return
-
-                selected_lunch = lunch_list[rsvp_id]
-
-                if not message["display_recipient"] in selected_lunch["rsvps"]:
-                    self.send_reply(
-                        message,
-                        "Oops! It looks like you haven't RSVP'd to this lunch_id!",
-                    )
-                    return
-
-                selected_lunch["rsvps"].remove(message["display_recipient"])
-
-                lunch_list[rsvp_id] = selected_lunch
-                self.storage.put("lunches", lunch_list)
-
-                self.send_reply(
-                    message,
-                    "You've successfully un-RSVP'd to lunch at "
-                    + selected_lunch["restaurant"]
-                    + ".",
-                )
 
         if message_args[0] == "delete-plan":
             # less than one arguments (doesnt have message_args[1])

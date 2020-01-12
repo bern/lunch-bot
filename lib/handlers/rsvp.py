@@ -59,15 +59,16 @@ class RsvpHandler(BaseHandler):
                 "You've already RSVP'd to this lunch_id! Type my-plans to show all of your current lunch plans.",
             )
             return
-        selected_plan["rsvps"].append(user)
+
+        selected_plan.rsvps.append(user)
         plans[rsvp_id] = selected_plan
-        self.storage.put("lunches", plans)
+        storage.put("lunches", plans)
 
         self.send_reply(
             client,
             message,
             "Thanks for RSVPing to lunch  at {}! Enjoy your food, {}!".format(
-                selected_lunch["restaurant"], message["display_recipient"],
+                selected_plan.restaurant, user.full_name,
             ),
         )
 
