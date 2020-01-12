@@ -3,7 +3,7 @@ from typing import Dict
 import zulip
 
 from lib import state_handler
-from lib.handlers import delete_plan
+from lib.handlers.delete_plan import DeletePlanHandler
 from lib.handlers.help import HelpHandler
 from lib.handlers.make_plan import MakePlanHandler
 from lib.handlers.my_plans import MyPlansHandler
@@ -22,6 +22,7 @@ class LunchBotHandler(object):
         self.storage = storage
 
         self.handlers = {
+            "delete-plan": DeletePlanHandler(),
             "help": HelpHandler(),
             "make-plan": MakePlanHandler(),
             "my-plans": MyPlansHandler(),
@@ -67,9 +68,7 @@ class LunchBotHandler(object):
             )
             return
 
-        if not message_args[0] in self.handlers or not self.is_valid_command(
-            message_args[0]
-        ):
+        if not message_args[0] in self.handlers:
             self.send_reply(
                 message,
                 "Oops! {} is not a valid lunch-bot command! Type help for a list of commands I understand :-)".format(
@@ -80,81 +79,4 @@ class LunchBotHandler(object):
         self.handlers[message_args[0]].handle_message(
             self.client, self.storage, message, message_args,
         )
-
-        return
-
-        if message_args[0] == "delete-plan":
-            # less than one arguments (doesnt have message_args[1])
-            if len(message_args) < 2:
-                self.send_reply(
-                    message,
-                    "Oops! The delete-plan command requires more information. Type help for formatting instructions.",
-                )
-                return
-
-            if (
-                not (self.storage.contains("lunches"))
-                or len(self.storage.get("lunches")) == 0
-            ):
-                self.send_reply(
-                    message,
-                    "There are no lunch plans to delete! Why not add one using the make-plan command?",
-                )
-            else:
-                try:
-                    int(message_args[1])
-                except ValueError:
-                    self.send_reply(
-                        message,
-                        "A lunch_id must be a number! Type show-plans to see each lunch_id and its associated lunch plan.",
-                    )
-                    return
-
-                delete_id = int(message_args[1])
-                lunch_list = self.storage.get("lunches")
-
-                if delete_id >= len(lunch_list) or delete_id < 0:
-                    self.send_reply(
-                        message,
-                        "That lunch_id doesn't exist! Type show-plans to see each lunch_id and its associated lunch plan.",
-                    )
-                    return
-
-                del lunch_list[delete_id]
-                self.storage.put("lunches", lunch_list)
-
-                self.send_reply(
-                    message, "You've successfully deleted lunch {}.".format(delete_id)
-                )  # See the updated list using the show-plans command!".format(delete_id))
-                for i, lunch in enumerate(lunch_list):
-                    print(
-                        str(i)
-                        + ": "
-                        + lunch["restaurant"]
-                        + " @ "
-                        + lunch["time"]
-                        + ", "
-                        + str(len(lunch["rsvps"]))
-                        + " RSVP(s)"
-                    )
-
-        # bot_handler.send_message(dict(
-        #     type='stream',
-        #     to='lunch',
-        #     subject='yum',
-        #     content='hello'
-        # ))
-
-    def is_valid_command(self, command):
-        commands = [
-            "help",
-            "make-plan",
-            "show-plans",
-            "delete-plan",
-            "rsvp",
-            "un-rsvp",
-            "flake",
-            "my-plans",
-        ]
-        return command in commands
 

@@ -16,6 +16,7 @@ class ShowPlansHandler(BaseHandler):
     ):
         if not storage.contains("lunches") or len(storage.get("lunches")) == 0:
             self.send_reply(
+                client,
                 message,
                 "There are no lunch plans to show! Why not add one using the make-plan command?",
             )
