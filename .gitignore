@@ -1,6 +1,7 @@
 # Random development things
 venv/
 *.pyc
+__pycache__
 .vscode/
 
 # Zulip configuration
