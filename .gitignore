@@ -3,6 +3,7 @@ venv/
 *.pyc
 __pycache__
 .vscode/
+.mypy_cache/
 
 # Zulip configuration
 .zuliprc

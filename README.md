@@ -22,6 +22,19 @@ The available commands are:
 
 * `delete-plan [lunch_id]` - Deletes a certain lunch plan, given its [lunch_id]. To see every lunch_id, use the show-plans command.
 
+## Contributing
+
+If you're interested in contributing to Lunch Bot: great! We only have one request: use [pre-commit](https://pre-commit.com/). Once it's set up, it will run [black](https://github.com/psf/black) and [mypy](http://mypy-lang.org/) every time to commit.
+
+```bash
+# Install pre-commit
+$ brew install pre-commit # On mac
+$ pip install pre-commit # Everywhere else
+
+# Register pre-commit in the repo
+$ pre-commit install
+```
+
 ## License
 
 MIT licensed. Refer to `LICENSE` document.
