@@ -3,15 +3,15 @@ from typing import Dict
 import zulip
 
 from lib import state_handler
-from lib.handlers.delete_plan import DeletePlanHandler
-from lib.handlers.help import HelpHandler
-from lib.handlers.make_plan import MakePlanHandler
-from lib.handlers.my_plans import MyPlansHandler
-from lib.handlers.not_a_command import NotACommandHandler
-from lib.handlers.reset import ResetHandler
-from lib.handlers.rsvp import RsvpHandler
-from lib.handlers.show_plans import ShowPlansHandler
-from lib.handlers.un_rsvp import UnRsvpHandler
+from lib.handlers.delete_plan import handle_delete_plan
+from lib.handlers.help import handle_help
+from lib.handlers.make_plan import handle_make_plan
+from lib.handlers.my_plans import handle_my_plans
+from lib.handlers.not_a_command import handle_not_a_command
+from lib.handlers.reset import handle_reset
+from lib.handlers.rsvp import handle_rsvp
+from lib.handlers.show_plans import handle_show_plans
+from lib.handlers.un_rsvp import handle_un_rsvp
 from lib.models.message import Message
 
 
@@ -24,18 +24,16 @@ class LunchBotHandler(object):
         self.client = client
         self.storage = storage
 
-        # TODO: Move these over to pure functions instead? Not sure that we
-        #       need them as classes bc Python has functionds as data.
-        self.default_handler = NotACommandHandler()
+        self.default_handler = handle_not_a_command
         self.handlers = {
-            "delete-plan": DeletePlanHandler(),
-            "help": HelpHandler(),
-            "make-plan": MakePlanHandler(),
-            "my-plans": MyPlansHandler(),
-            "reset": ResetHandler(),
-            "rsvp": RsvpHandler(),
-            "show-plans": ShowPlansHandler(),
-            "un-rsvp": UnRsvpHandler(),
+            "delete-plan": handle_delete_plan,
+            "help": handle_help,
+            "make-plan": handle_make_plan,
+            "my-plans": handle_my_plans,
+            "reset": handle_reset,
+            "rsvp": handle_rsvp,
+            "show-plans": handle_show_plans,
+            "un-rsvp": handle_un_rsvp,
         }
 
     def usage(self):
@@ -69,7 +67,6 @@ class LunchBotHandler(object):
         if message["sender_email"] == self.client.email or len(args) == 0:
             return
 
-        self.handlers.get(args[0], self.default_handler).handle_message(
+        self.handlers.get(args[0], self.default_handler)(
             self.client, self.storage, message, args
         )
-

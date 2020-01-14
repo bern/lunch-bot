@@ -1,13 +1,12 @@
 from typing import List
 import zulip
 
-from lib.handlers.base_handler import BaseHandler
-from lib.handlers.base_handler import Message
+from lib import common
+from lib.models.message import Message
 from lib.state_handler import StateHandler
 
 
-class HelpHandler(BaseHandler):
-    HELP_MESSAGE = """
+HELP_MESSAGE = """
 Lunch Bot Help
 
 Available Commands:
@@ -26,13 +25,10 @@ Available Commands:
 
 `delete-plan [lunch_id]` Deletes a certain lunch plan, given its [lunch_id]. To see every lunch_id, use the show-plans command."""
 
-    def handle_message(
-        self,
-        client: zulip.Client,
-        storage: StateHandler,
-        message: Message,
-        args: List[str],
-    ):
-        self.send_reply(
-            client, message, self.HELP_MESSAGE,
-        )
+
+def handle_help(
+    client: zulip.Client, storage: StateHandler, message: Message, args: List[str],
+):
+    common.send_reply(
+        client, message, HELP_MESSAGE,
+    )
