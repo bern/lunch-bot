@@ -10,3 +10,6 @@ __pycache__
 
 # Shelve persistence
 lunch-bot.db
+lunch-bot.db.bak
+lunch-bot.db.dat
+lunch-bot.db.dir
