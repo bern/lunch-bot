@@ -15,8 +15,9 @@ def handle_my_plans(
         or len(storage.get(storage.PLANS_ENTRY)) == 0
     ):
         common.send_reply(
+            client,
             message,
-            "There are no active lunch plans right now! Why not add one using the make-plan command?",
+            "There are no active lunch plans right now! Why not add one using the make-plan command?"
         )
         return
 
