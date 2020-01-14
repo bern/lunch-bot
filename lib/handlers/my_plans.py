@@ -10,7 +10,10 @@ from lib.state_handler import StateHandler
 def handle_my_plans(
     client: zulip.Client, storage: StateHandler, message: Message, args: List[str],
 ):
-    if not storage.contains("lunches") or len(storage.get("lunches")) == 0:
+    if (
+        not storage.contains(storage.PLANS_ENTRY)
+        or len(storage.get(storage.PLANS_ENTRY)) == 0
+    ):
         common.send_reply(
             message,
             "There are no active lunch plans right now! Why not add one using the make-plan command?",
@@ -27,7 +30,7 @@ def handle_my_plans(
                     "{}: {} @ {}, {} RSVP(s)".format(
                         i, plan.restaurant, plan.time, len(plan.rsvps),
                     )
-                    for i, plan in enumerate(storage.get("lunches"))
+                    for i, plan in enumerate(storage.get(storage.PLANS_ENTRY))
                     if user in plan.rsvps
                 ]
             )

@@ -9,7 +9,10 @@ from lib.state_handler import StateHandler
 def handle_show_plans(
     client: zulip.Client, storage: StateHandler, message: Message, args: List[str],
 ):
-    if not storage.contains("lunches") or len(storage.get("lunches")) == 0:
+    if (
+        not storage.contains(storage.PLANS_ENTRY)
+        or len(storage.get(storage.PLANS_ENTRY)) == 0
+    ):
         common.send_reply(
             client,
             message,
@@ -25,7 +28,7 @@ def handle_show_plans(
                 "{}: {} @ {}, {} RSVP(s)".format(
                     i, plan.restaurant, plan.time, len(plan.rsvps),
                 )
-                for i, plan in enumerate(storage.get("lunches"))
+                for i, plan in enumerate(storage.get(storage.PLANS_ENTRY))
             ]
         ),
     )

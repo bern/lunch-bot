@@ -18,7 +18,10 @@ def handle_un_rsvp(
         )
         return
 
-    if not storage.contains("lunches") or len(storage.get("lunches")) == 0:
+    if (
+        not storage.contains(storage.PLANS_ENTRY)
+        or len(storage.get(storage.PLANS_ENTRY)) == 0
+    ):
         common.send_reply(
             client,
             message,
@@ -38,7 +41,7 @@ def handle_un_rsvp(
         )
         return
 
-    plans = storage.get("lunches")
+    plans = storage.get(storage.PLANS_ENTRY)
     if rsvp_id >= len(plans) or rsvp_id < 0:
         common.send_reply(
             client,
@@ -58,7 +61,7 @@ def handle_un_rsvp(
 
     selected_plan.rsvps.remove(user)
     plans[rsvp_id] = selected_plan
-    storage.put("lunches", plans)
+    storage.put(storage.PLANS_ENTRY, plans)
 
     common.send_reply(
         client,

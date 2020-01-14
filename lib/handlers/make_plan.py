@@ -25,12 +25,12 @@ def handle_make_plan(
     user = User.get_sender(message)
     plan = Plan(args[1], args[2], [user])
 
-    if not storage.contains("lunches"):
-        storage.put("lunches", [])
+    if not storage.contains(storage.PLANS_ENTRY):
+        storage.put(storage.PLANS_ENTRY, [])
 
-    lunch_list = storage.get("lunches")
+    lunch_list = storage.get(storage.PLANS_ENTRY)
     lunch_list.append(plan)
-    storage.put("lunches", lunch_list)
+    storage.put(storage.PLANS_ENTRY, lunch_list)
 
     common.send_reply(
         client,
