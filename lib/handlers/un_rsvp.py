@@ -29,8 +29,8 @@ def handle_un_rsvp(
         )
         return
 
-    # TODO: Change interface from numeric ID to a string ID. Maybe try to
-    #       think about the UX surrounding plans.
+    # TODO (#3): Change interface from numeric ID to a string ID. Maybe try to
+    #            think about the UX surrounding plans.
     try:
         rsvp_id = int(args[1])
     except ValueError:

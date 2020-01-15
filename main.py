@@ -16,7 +16,7 @@ def main(args: List[str]):
         config_file=path.join(path.abspath(os.getcwd()), ZULIPRC_FILE_NAME)
     )
 
-    # TODO: Schedule a thing to clear plans every midnight, P(D|S)T.
+    # TODO (#4): Schedule a thing to clear plans every midnight, E(D|S)T.
     try:
         with state_handler.StateHandler() as storage:
             bot = lunch_bot.LunchBotHandler(client, storage)
