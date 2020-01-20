@@ -23,6 +23,7 @@ def handle_rsvp(
         or len(storage.get(storage.PLANS_ENTRY)) == 0
     ):
         common.send_reply(
+            client,
             message,
             "There are no lunch plans to RSVP to! Why not add one using the make-plan command?",
         )
