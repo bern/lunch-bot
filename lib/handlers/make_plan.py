@@ -19,9 +19,8 @@ def handle_make_plan(
         )
         return
 
-    # TODO: Do validation on date, so that we can infer the time from the
-    #       date input. With that information, send out reminders some time
-    #       before folks leave for lunch.
+    # TODO (#2): Do validation on date, so that we can infer the time from the
+    #            date input.
     user = User.get_sender(message)
     plan = Plan(args[1], args[2], [user])
 

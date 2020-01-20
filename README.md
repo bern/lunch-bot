@@ -35,6 +35,14 @@ $ pip install pre-commit # Everywhere else
 $ pre-commit install
 ```
 
+### Tasks
+
+If something should be done, you don't want to do it now, just make an issue and leave a TODO. In this repo, it's good practice to:
+
+1. Create an issue with the appropriate tag (e.g. "enhancement," "bug," etc.) and assign it to the "Lunch Bot" project.
+
+2. Leave a TODO in your code that looks like `# TODO (#<issue number>): Description`
+
 ## License
 
 MIT licensed. Refer to `LICENSE` document.
