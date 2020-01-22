@@ -11,9 +11,7 @@ def test_handle_rsvp_bad_args(
     incorrect number of arguments.
     """
     message, args = make_zulip_message("rsvp tjs also-this-extra-arg")
-    handle_rsvp(
-        mock_client, mock_storage, message, args,
-    )
+    handle_rsvp(mock_client, mock_storage, message, args)
 
     mock_storage.put.assert_not_called()
     mock_send_reply.assert_called_with(
@@ -30,9 +28,7 @@ def test_handle_rsvp_no_plans(
     Ensures that handle_rsvp fails as expected when there are no plans.
     """
     message, args = make_zulip_message("rsvp 0")
-    handle_rsvp(
-        mock_client, mock_storage, message, args,
-    )
+    handle_rsvp(mock_client, mock_storage, message, args)
 
     mock_storage.put.assert_not_called()
     mock_send_reply.assert_called_with(
@@ -43,18 +39,16 @@ def test_handle_rsvp_no_plans(
 
 
 def test_handle_rsvp_malformed_id(
-    mock_client, mock_storage, mock_send_reply, make_zulip_message
+    mock_client, mock_storage, mock_send_reply, make_zulip_message, make_time
 ):
     """
     Ensures that handle_rsvp failes correctly when the plan ID is malformed
     (i.e. it cannot be coerced to int).
     """
-    mock_storage.get.return_value = [Plan("tjs", "12:30", [])]
+    mock_storage.get.return_value = [Plan("tjs", make_time(12, 30), [])]
 
     message, args = make_zulip_message("rsvp not-an-id")
-    handle_rsvp(
-        mock_client, mock_storage, message, args,
-    )
+    handle_rsvp(mock_client, mock_storage, message, args)
 
     mock_storage.put.assert_not_called()
     mock_send_reply.assert_called_with(
@@ -65,18 +59,16 @@ def test_handle_rsvp_malformed_id(
 
 
 def test_handle_rsvp_bad_id(
-    mock_client, mock_storage, mock_send_reply, make_zulip_message
+    mock_client, mock_storage, mock_send_reply, make_zulip_message, make_time
 ):
     """
     Ensures that handle_rsvp failes correctly when the plan ID is not malformed
     but does not correspond to a plan.
     """
-    mock_storage.get.return_value = [Plan("tjs", "12:30", [])]
+    mock_storage.get.return_value = [Plan("tjs", make_time(12, 30), [])]
 
     message, args = make_zulip_message("rsvp 1")
-    handle_rsvp(
-        mock_client, mock_storage, message, args,
-    )
+    handle_rsvp(mock_client, mock_storage, message, args)
 
     mock_storage.put.assert_not_called()
     mock_send_reply.assert_called_with(
@@ -87,18 +79,18 @@ def test_handle_rsvp_bad_id(
 
 
 def test_handle_rsvp_already_rsvpd(
-    mock_client, mock_storage, mock_send_reply, make_zulip_message
+    mock_client, mock_storage, mock_send_reply, make_zulip_message, make_time
 ):
     """
     Ensures handle_rsvp fails correctly when the user is already RSVP'd to the
     event to which they're trying to rsvp.
     """
-    mock_storage.get.return_value = [Plan("tjs", "12:30", [User("Test Sender", 5678)])]
+    mock_storage.get.return_value = [
+        Plan("tjs", make_time(12, 30), [User("Test Sender", 5678)])
+    ]
 
     message, args = make_zulip_message("rsvp 0")
-    handle_rsvp(
-        mock_client, mock_storage, message, args,
-    )
+    handle_rsvp(mock_client, mock_storage, message, args)
 
     mock_storage.put.assert_not_called()
     mock_send_reply.assert_called_with(
@@ -109,21 +101,20 @@ def test_handle_rsvp_already_rsvpd(
 
 
 def test_handle_rsvp_success(
-    mock_client, mock_storage, mock_send_reply, make_zulip_message
+    mock_client, mock_storage, mock_send_reply, make_zulip_message, make_time
 ):
     """
     Ensures that handle_rsvp functions correctly when the preconditions are
     met.
     """
-    mock_storage.get.return_value = [Plan("tjs", "12:30", [])]
+    mock_storage.get.return_value = [Plan("tjs", make_time(12, 30), [])]
 
     message, args = make_zulip_message("rsvp 0")
-    handle_rsvp(
-        mock_client, mock_storage, message, args,
-    )
+    handle_rsvp(mock_client, mock_storage, message, args)
 
     mock_storage.put.assert_called_with(
-        mock_storage.PLANS_ENTRY, [Plan("tjs", "12:30", [User("Test Sender", 5678)])]
+        mock_storage.PLANS_ENTRY,
+        [Plan("tjs", make_time(12, 30), [User("Test Sender", 5678)])],
     )
     mock_send_reply.assert_called_with(
         mock_client,

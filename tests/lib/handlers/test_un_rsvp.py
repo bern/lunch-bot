@@ -11,9 +11,7 @@ def test_handle_un_rsvp_bad_args(
     arguments.
     """
     message, args = make_zulip_message("un-rsvp 0 5")
-    handle_un_rsvp(
-        mock_client, mock_storage, message, args,
-    )
+    handle_un_rsvp(mock_client, mock_storage, message, args)
 
     mock_storage.put.assert_not_called()
     mock_send_reply.assert_called_with(
@@ -31,9 +29,7 @@ def test_handle_un_rsvp_no_lunches(
     un-rsvp from.
     """
     message, args = make_zulip_message("un-rsvp 0")
-    handle_un_rsvp(
-        mock_client, mock_storage, message, args,
-    )
+    handle_un_rsvp(mock_client, mock_storage, message, args)
 
     mock_storage.put.assert_not_called()
     mock_send_reply.assert_called_with(
@@ -44,18 +40,18 @@ def test_handle_un_rsvp_no_lunches(
 
 
 def test_handle_un_rsvp_malformed_id(
-    mock_client, mock_storage, mock_send_reply, make_zulip_message
+    mock_client, mock_storage, mock_send_reply, make_zulip_message, make_time
 ):
     """
     Ensures that handle_un_rsvp fails as expected when the user provides an id
     that is not a number.
     """
-    mock_storage.get.return_value = [Plan("tjs", "12:30", [User("Test Sender", 5678)])]
+    mock_storage.get.return_value = [
+        Plan("tjs", make_time(12, 30), [User("Test Sender", 5678)])
+    ]
 
     message, args = make_zulip_message("un-rsvp text")
-    handle_un_rsvp(
-        mock_client, mock_storage, message, args,
-    )
+    handle_un_rsvp(mock_client, mock_storage, message, args)
 
     mock_storage.put.assert_not_called()
     mock_send_reply.assert_called_with(
@@ -66,18 +62,18 @@ def test_handle_un_rsvp_malformed_id(
 
 
 def test_handle_un_rsvp_bad_id(
-    mock_client, mock_storage, mock_send_reply, make_zulip_message
+    mock_client, mock_storage, mock_send_reply, make_zulip_message, make_time
 ):
     """
     Ensures that handle_un_rsvp fails as expected when the user provides an id
     that is out of range of our available lunches.
     """
-    mock_storage.get.return_value = [Plan("tjs", "12:30", [User("Test Sender", 5678)])]
+    mock_storage.get.return_value = [
+        Plan("tjs", make_time(12, 30), [User("Test Sender", 5678)])
+    ]
 
     message, args = make_zulip_message("un-rsvp 1")
-    handle_un_rsvp(
-        mock_client, mock_storage, message, args,
-    )
+    handle_un_rsvp(mock_client, mock_storage, message, args)
 
     mock_storage.put.assert_not_called()
     mock_send_reply.assert_called_with(
@@ -88,44 +84,40 @@ def test_handle_un_rsvp_bad_id(
 
 
 def test_handle_un_rsvp_not_rsvpd(
-    mock_client, mock_storage, mock_send_reply, make_zulip_message,
+    mock_client, mock_storage, mock_send_reply, make_zulip_message, make_time
 ):
     """
     Ensures that handle_un_rsvp fails as expected when the user is not already
     RSVP'd to the event.
     """
-    mock_storage.get.return_value = [Plan("tjs", "12:30", [])]
+    mock_storage.get.return_value = [Plan("tjs", make_time(12, 30), [])]
 
     message, args = make_zulip_message("un-rsvp 0")
-    handle_un_rsvp(
-        mock_client, mock_storage, message, args,
-    )
+    handle_un_rsvp(mock_client, mock_storage, message, args)
 
     mock_storage.put.assert_not_called()
     mock_send_reply.assert_called_with(
-        mock_client,
-        message,
-        "Oops! It looks like you haven't RSVP'd to this lunch_id!",
+        mock_client, message, "Oops! It looks like you haven't RSVP'd to this lunch_id!"
     )
 
 
 def test_handle_un_rsvp_success(
-    mock_client, mock_storage, mock_send_reply, make_zulip_message
+    mock_client, mock_storage, mock_send_reply, make_zulip_message, make_time
 ):
     """
     Ensures that handle_un_rsvp succeeds when the required preconditions are
     met.
     """
-    mock_storage.get.return_value = [Plan("tjs", "12:30", [User("Test Sender", 5678)])]
+    mock_storage.get.return_value = [
+        Plan("tjs", make_time(12, 30), [User("Test Sender", 5678)])
+    ]
 
     message, args = make_zulip_message("un-rsvp 0")
-    handle_un_rsvp(
-        mock_client, mock_storage, message, args,
-    )
+    handle_un_rsvp(mock_client, mock_storage, message, args)
 
     mock_storage.put_assert_called_with(
-        mock_storage.PLANS_ENTRY, Plan("tjs", "12:30", [])
+        mock_storage.PLANS_ENTRY, Plan("tjs", make_time(12, 30), [])
     )
     mock_send_reply.assert_called_with(
-        mock_client, message, "You've successful un-RSVP'd to lunch at tjs.",
+        mock_client, message, "You've successful un-RSVP'd to lunch at tjs."
     )

@@ -11,9 +11,7 @@ def test_handle_my_plans_no_plans(
     shown.
     """
     message, args = make_zulip_message("my-plans")
-    handle_my_plans(
-        mock_client, mock_storage, message, args,
-    )
+    handle_my_plans(mock_client, mock_storage, message, args)
 
     mock_send_reply.assert_called_with(
         mock_client,
@@ -23,17 +21,17 @@ def test_handle_my_plans_no_plans(
 
 
 def test_handle_my_plans_success(
-    mock_client, mock_storage, mock_send_reply, make_zulip_message,
+    mock_client, mock_storage, mock_send_reply, make_zulip_message, make_time
 ):
     """
     Checks that, when the user has a plan, the correct list is shown.
     """
-    mock_storage.get.return_value = [Plan("tjs", "12:30", [User("Test Sender", 5678)])]
+    mock_storage.get.return_value = [
+        Plan("tjs", make_time(12, 30), [User("Test Sender", 5678)])
+    ]
 
     message, args = make_zulip_message("my-plans")
-    handle_my_plans(
-        mock_client, mock_storage, message, args,
-    )
+    handle_my_plans(mock_client, mock_storage, message, args)
 
     mock_send_reply.assert_called_with(
         mock_client,
