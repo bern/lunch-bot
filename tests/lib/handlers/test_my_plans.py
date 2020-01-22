@@ -36,5 +36,5 @@ def test_handle_my_plans_success(
     mock_send_reply.assert_called_with(
         mock_client,
         message,
-        "Here are the lunches you've RSVP'd to:\n0: tjs @ 12:30, 1 RSVP(s)",
+        "Here are the lunches you've RSVP'd to:\n0: tjs @ 12:30pm, 1 RSVP(s)",
     )

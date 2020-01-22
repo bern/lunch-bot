@@ -10,9 +10,7 @@ def test_handle_show_plans_no_plans(
     user.
     """
     message, args = make_zulip_message("show-plans")
-    handle_show_plans(
-        mock_client, mock_storage, message, args,
-    )
+    handle_show_plans(mock_client, mock_storage, message, args)
 
     mock_send_reply.assert_called_with(
         mock_client,
@@ -22,21 +20,17 @@ def test_handle_show_plans_no_plans(
 
 
 def test_handle_show_plans_success(
-    mock_client, mock_storage, mock_send_reply, make_zulip_message, make_time,
+    mock_client, mock_storage, mock_send_reply, make_zulip_message, make_time
 ):
     """
     Ensures that, if there are plans, handle_show_plans shows the user all of
     the plans.
     """
-    mock_storage.get.return_value = [
-        Plan("tjs", make_time(12, 30), []),
-    ]
+    mock_storage.get.return_value = [Plan("tjs", make_time(12, 30), [])]
 
     message, args = make_zulip_message("show-plans")
-    handle_show_plans(
-        mock_client, mock_storage, message, args,
-    )
+    handle_show_plans(mock_client, mock_storage, message, args)
 
     mock_send_reply.assert_called_with(
-        mock_client, message, "0: tjs @ 12:30, 0 RSVP(s)",
+        mock_client, message, "0: tjs @ 12:30pm, 0 RSVP(s)"
     )

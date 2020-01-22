@@ -7,7 +7,7 @@ from lib.state_handler import StateHandler
 
 
 def handle_show_plans(
-    client: zulip.Client, storage: StateHandler, message: Message, args: List[str],
+    client: zulip.Client, storage: StateHandler, message: Message, args: List[str]
 ):
     if (
         not storage.contains(storage.PLANS_ENTRY)
@@ -26,7 +26,7 @@ def handle_show_plans(
         "\n".join(
             [
                 "{}: {} @ {}, {} RSVP(s)".format(
-                    i, plan.restaurant, plan.time, len(plan.rsvps),
+                    i, plan.restaurant, common.render_plan_time(plan), len(plan.rsvps)
                 )
                 for i, plan in enumerate(storage.get(storage.PLANS_ENTRY))
             ]
