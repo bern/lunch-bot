@@ -14,9 +14,7 @@ def test_handle_delete_plan_bad_args(
     response.
     """
     message, args = make_zulip_message("delete-plan")
-    handle_delete_plan(
-        mock_client, mock_storage, message, args,
-    )
+    handle_delete_plan(mock_client, mock_storage, message, args)
 
     mock_send_reply.assert_called_with(
         mock_client,
@@ -26,16 +24,14 @@ def test_handle_delete_plan_bad_args(
 
 
 def test_handle_delete_plan_no_plans(
-    mock_client, mock_storage, mock_send_reply, make_zulip_message,
+    mock_client, mock_storage, mock_send_reply, make_zulip_message
 ):
     """
     Ensures that handle_delete_plan functions correctly when the StateHandler
     has no plans available to use.
     """
     message, args = make_zulip_message("delete-plan 0")
-    handle_delete_plan(
-        mock_client, mock_storage, message, args,
-    )
+    handle_delete_plan(mock_client, mock_storage, message, args)
 
     mock_send_reply.assert_called_with(
         mock_client,
@@ -45,20 +41,16 @@ def test_handle_delete_plan_no_plans(
 
 
 def test_handle_delete_plan_malformed_id(
-    mock_client, mock_storage, mock_send_reply, make_zulip_message
+    mock_client, mock_storage, mock_send_reply, make_zulip_message, make_time
 ):
     """
     Ensures that handle_delete_plan functions correctly when the user provides
     a non-integer ID.
     """
-    mock_storage.get.return_value = [
-        Plan("tjs", "12:30", []),
-    ]
+    mock_storage.get.return_value = [Plan("tjs", make_time(12, 30), [])]
 
     message, args = make_zulip_message("delete-plan not-a-lunch")
-    handle_delete_plan(
-        mock_client, mock_storage, message, args,
-    )
+    handle_delete_plan(mock_client, mock_storage, message, args)
 
     mock_send_reply.assert_called_with(
         mock_client,
@@ -68,20 +60,16 @@ def test_handle_delete_plan_malformed_id(
 
 
 def test_handle_delete_plan_bad_id(
-    mock_client, mock_storage, mock_send_reply, make_zulip_message
+    mock_client, mock_storage, mock_send_reply, make_zulip_message, make_time
 ):
     """
     Ensures that handle_delete_plan functions correctly when the user provides
     an integer ID that does not correspond to a plan.
     """
-    mock_storage.get.return_value = [
-        Plan("tjs", "12:30", []),
-    ]
+    mock_storage.get.return_value = [Plan("tjs", make_time(12, 30), [])]
 
     message, args = make_zulip_message("delete-plan 1")
-    handle_delete_plan(
-        mock_client, mock_storage, message, args,
-    )
+    handle_delete_plan(mock_client, mock_storage, message, args)
 
     mock_send_reply.assert_called_with(
         mock_client,
@@ -91,16 +79,12 @@ def test_handle_delete_plan_bad_id(
 
 
 def test_handle_delete_plan_success(
-    mock_client, mock_storage, mock_send_reply, make_zulip_message
+    mock_client, mock_storage, mock_send_reply, make_zulip_message, make_time
 ):
-    mock_storage.get.return_value = [
-        Plan("tjs", "12:30", []),
-    ]
+    mock_storage.get.return_value = [Plan("tjs", make_time(12, 30), [])]
 
     message, args = make_zulip_message("delete-plan 0")
-    handle_delete_plan(
-        mock_client, mock_storage, message, args,
-    )
+    handle_delete_plan(mock_client, mock_storage, message, args)
 
     mock_storage.put.assert_called_with(mock_storage.PLANS_ENTRY, [])
     mock_send_reply.assert_called_with(

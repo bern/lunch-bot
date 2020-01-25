@@ -1,6 +1,7 @@
 import zulip
 
 from lib.models.message import Message
+from lib.models.plan import Plan
 
 
 def send_reply(client: zulip.Client, message: Message, reply: str):
@@ -20,3 +21,10 @@ def send_reply(client: zulip.Client, message: Message, reply: str):
             "content": reply,
         }
     )
+
+
+def render_plan_time(plan: Plan) -> str:
+    """
+    Renders the time of a plan as we would want it to appear to the user.
+    """
+    return plan.time.strftime("%I:%M%p").lower()

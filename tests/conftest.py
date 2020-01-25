@@ -1,3 +1,4 @@
+from datetime import datetime
 import time
 from typing import List
 from typing import Tuple
@@ -65,3 +66,20 @@ def make_zulip_message():
         return message, args
 
     return _make_zulip_message
+
+
+@pytest.fixture
+def make_time():
+    def _make_time(hour: int, minute: int) -> datetime:
+        now = datetime.now()
+        return datetime(
+            year=now.year,
+            month=now.month,
+            day=now.day,
+            hour=hour,
+            minute=minute,
+            second=0,
+            microsecond=0,
+        )
+
+    return _make_time
