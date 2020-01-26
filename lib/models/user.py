@@ -20,4 +20,4 @@ class User:
         """
         Given a message from Zulip, construct the user that is the sender.
         """
-        return User(message["sender_full_name"], message["sender_id"])
+        return User(message.sender_full_name, message.sender_id)

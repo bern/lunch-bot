@@ -15,9 +15,9 @@ def send_reply(client: zulip.Client, message: Message, reply: str):
         {
             "type": "private",
             "to": [
-                recipient["email"]
-                for recipient in message["display_recipient"]
-                if client.email != recipient["email"]
+                recipient.email
+                for recipient in message.display_recipient
+                if client.email != recipient.email
             ],
             "content": reply,
         }

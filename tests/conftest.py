@@ -1,10 +1,10 @@
 from datetime import datetime
-import time
 from typing import List
 from typing import Tuple
 import pytest
 
 from lib import common
+from lib.models.message import DisplayRecipient
 from lib.models.message import Message
 
 
@@ -34,42 +34,28 @@ def mock_send_reply(mocker):
 @pytest.fixture
 def make_zulip_message():
     def _make_zulip_message(contents: str) -> Tuple[Message, List[str]]:
-        message = {
-            "id": 1234,
-            "sender_id": 5678,
-            "content": contents,
-            "recipient_id": 1337,
-            "timestamp": int(time.time()),
-            "client": "website",
-            "subject": "",
-            "subject_links": [],
-            "is_me_message": False,
-            "reactions": [],
-            "submessages": [],
-            "sender_full_name": "Test Sender",
-            "sender_short_name": "tester",
-            "sender_email": "tester@email.com",
-            "sender_realm_str": "recurse",
-            "display_recipient": [
-                {
-                    "email": "tester@email.com",
-                    "full_name": "Test Sender",
-                    "short_name": "tester",
-                    "id": 5678,
-                    "is_mirror_dummy": False,
-                },
-                {
-                    "id": 1337,
-                    "email": "lunch-bot-bot@zulipchat.com",
-                    "full_name": "Lunch Bot",
-                    "short_name": "lunch-bot-bot",
-                    "is_mirror_dummy": False,
-                },
+        message = Message(
+            content=contents,
+            display_recipient=[
+                DisplayRecipient(
+                    email="tester@email.com",
+                    full_name="Test Sender",
+                    is_mirror_dummy=False,
+                    id=5678,
+                    short_name="tester",
+                ),
+                DisplayRecipient(
+                    email="lunch-bot-bot@zulipchat.com",
+                    full_name="Lunch Bot",
+                    id=1337,
+                    is_mirror_dummy=False,
+                    short_name="lunch-bot-bot",
+                ),
             ],
-            "type": "private",
-            "avatar_url": "https://fakeurl.com/fake_picture.png",
-            "content_type": "text/x-markdown",
-        }
+            sender_email="tester@email.com",
+            sender_full_name="Test Sender",
+            sender_id=5678,
+        )
         args = contents.split()
 
         return message, args

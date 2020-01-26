@@ -41,7 +41,7 @@ class LunchBotHandler(object):
         lunch-bot is a bot that helps Recursers organize groups to get lunch! Type help to get started.
         """
 
-    def safe_handle_message(self, message: Message):
+    def safe_handle_message(self, message: Dict[str, Any]):
         """
         A safe wrapper around handle_message that logs all errors, instead of
         crashing the bot. Useful for running in production where bugs aren't a
@@ -54,7 +54,7 @@ class LunchBotHandler(object):
         except Exception as e:
             print(e)
 
-    def handle_message(self, message: Message):
+    def handle_message(self, message: Dict[str, Any]):
         """
         Handles messages from users on Zulip. Handles the provided command, and
         responds with the appropriate message.
@@ -63,10 +63,11 @@ class LunchBotHandler(object):
         """
         # If the bot was the sender of the message, then skip processing the
         # message.
-        args = message["content"].split()
-        if message["sender_email"] == self.client.email or len(args) == 0:
+        parsed_message = Message.parse_zulip_message(message)
+        args = parsed_message.content.split()
+        if parsed_message.sender_email == self.client.email or len(args) == 0:
             return
 
         self.handlers.get(args[0], self.default_handler)(
-            self.client, self.storage, message, args
+            self.client, self.storage, parsed_message, args
         )
