@@ -4,7 +4,16 @@ from typing import List
 from typing import Tuple
 import pytest
 
+from lib import common
 from lib.models.message import Message
+
+
+@pytest.fixture(autouse=True)
+def mock_time(mocker):
+    mocker.patch(
+        "lib.common.get_now",
+        return_value=datetime(year=2020, month=1, day=24, hour=10, minute=0, second=0,),
+    )
 
 
 @pytest.fixture
@@ -71,7 +80,7 @@ def make_zulip_message():
 @pytest.fixture
 def make_time():
     def _make_time(hour: int, minute: int) -> datetime:
-        now = datetime.now()
+        now = common.get_now()
         return datetime(
             year=now.year,
             month=now.month,

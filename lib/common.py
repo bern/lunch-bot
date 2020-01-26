@@ -1,3 +1,4 @@
+from datetime import datetime
 import zulip
 
 from lib.models.message import Message
@@ -28,3 +29,11 @@ def render_plan_time(plan: Plan) -> str:
     Renders the time of a plan as we would want it to appear to the user.
     """
     return plan.time.strftime("%I:%M%p").lower()
+
+
+def get_now() -> datetime:
+    """
+    Returns the current time. Exactly equivalent to datetime.now(). This
+    function only exists because it can be mocked, but datetime.now() cannot.
+    """
+    return datetime.now()

@@ -1,5 +1,5 @@
-import regex as re
 from datetime import datetime
+import regex as re
 from typing import List
 import zulip
 
@@ -27,9 +27,17 @@ def handle_make_plan(
         common.send_reply(
             client,
             message,
-            "Sorry, the time you entered could not be used because: it is {}.".format(
-                e
-            ),
+            "Sorry, the time you entered could not be used because it is not a valid date format.",
+        )
+        return
+
+    now = common.get_now()
+    if plan_time < now:
+        print(plan_time, now)
+        common.send_reply(
+            client,
+            message,
+            "Sorry, you can't plan for a lunch before the current time.",
         )
         return
 
@@ -68,7 +76,7 @@ def parse_time(date_str: str) -> datetime:
     """
     match = re.match(r"(\d?\d):(\d\d)(am|pm)?", date_str)
     if match is None:
-        raise ValueError("not an interpretable date format")
+        raise ValueError()
 
     groups = match.groups()
     hour = int(groups[0])
@@ -76,7 +84,7 @@ def parse_time(date_str: str) -> datetime:
     if groups[2] == "pm" and hour < 12:
         hour += 12
 
-    now = datetime.now()
+    now = common.get_now()
     time = datetime(
         year=now.year,
         month=now.month,
@@ -86,8 +94,5 @@ def parse_time(date_str: str) -> datetime:
         second=0,
         microsecond=0,
     )
-
-    if time < now:
-        raise ValueError("before current time")
 
     return time
