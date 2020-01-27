@@ -27,6 +27,12 @@ def handle_my_plans(
         client,
         message,
         "Here are the lunches you've RSVP'd to:\n{}".format(
-            "\n".join([common.render_plan(plan) for _, plan in plans.items()])
+            "\n".join(
+                [
+                    common.render_plan(plan)
+                    for _, plan in plans.items()
+                    if user in plan.rsvps
+                ]
+            )
         ),
     )

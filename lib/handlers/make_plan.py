@@ -32,7 +32,6 @@ def handle_make_plan(
 
     now = common.get_now()
     if plan_time < now:
-        print(plan_time, now)
         common.send_reply(
             client,
             message,

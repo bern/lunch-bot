@@ -67,7 +67,6 @@ def handle_rsvp(
 
     selected_plan.rsvps.append(user)
     plans[selected_plan.uuid] = selected_plan
-    print(plans)
     storage.put(storage.PLANS_ENTRY, plans)
 
     common.send_reply(
