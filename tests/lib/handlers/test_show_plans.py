@@ -34,4 +34,4 @@ def test_handle_show_plans_success(
     message, args = make_zulip_message("show-plans")
     handle_show_plans(mock_client, mock_storage, message, args)
 
-    mock_send_reply.assert_called_with(mock_client, message, "tjs @ 12:30pm, 0 RSVP(s)")
+    mock_send_reply.assert_called_with(mock_client, message, "tjs @ 12:30pm, 0 RSVPs")
