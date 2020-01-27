@@ -18,9 +18,8 @@ def handle_delete_plan(
         )
         return
 
-    use_time = False
+    time = None
     if len(args) == 3:
-        use_time = True
         time = common.parse_time(args[2])
 
     if (
@@ -35,12 +34,9 @@ def handle_delete_plan(
         return
 
     plans = storage.get(storage.PLANS_ENTRY)
-    possible_plans = []
-    for _, plan in plans.items():
-        if plan.restaurant == args[1] and (not use_time or plan.time == time):
-            possible_plans.append(plan)
+    matching_plans = common.get_matching_plans(args[1], storage, time=time)
 
-    if len(possible_plans) == 0:
+    if len(matching_plans) == 0:
         common.send_reply(
             client,
             message,
@@ -48,17 +44,17 @@ def handle_delete_plan(
         )
         return
 
-    if len(possible_plans) > 1:
+    if len(matching_plans) > 1:
         common.send_reply(
             client,
             message,
             "There are multiple lunches with that lunch_id. Please reissue the command with the time of the lunch you're interested in:\n{}".format(
-                "\n".join([common.render_plan_short(plan) for plan in possible_plans]),
+                "\n".join([common.render_plan_short(plan) for plan in matching_plans]),
             ),
         )
         return
 
-    plan = possible_plans[0]
+    plan = matching_plans[0]
     del plans[plan.uuid]
     storage.put(storage.PLANS_ENTRY, plans)
 

@@ -10,7 +10,7 @@ def test_handle_rsvp_bad_args(
     Ensures that the RSVP handler will fail as expected when we provide an
     incorrect number of arguments.
     """
-    message, args = make_zulip_message("rsvp tjs also-this-extra-arg")
+    message, args = make_zulip_message("rsvp tjs 12:30 fasdf")
     handle_rsvp(mock_client, mock_storage, message, args)
 
     mock_storage.put.assert_not_called()
@@ -80,6 +80,64 @@ def test_handle_rsvp_already_rsvpd(
     )
 
 
+def test_handle_rsvp_ambiguous(
+    mock_client, mock_storage, mock_send_reply, make_zulip_message, make_time
+):
+    """
+    Ensures that, when the query is ambiguous, handle_rsvp alerts the user and
+    asks them to disambiguate with a time.
+    """
+    plan1 = Plan("tjs", make_time(11, 00), [])
+    plan2 = Plan("tjs", make_time(12, 30), [])
+    mock_storage.get.return_value = {
+        plan1.uuid: plan1,
+        plan2.uuid: plan2,
+    }
+
+    message, args = make_zulip_message("rsvp tjs")
+    handle_rsvp(mock_client, mock_storage, message, args)
+
+    mock_storage.put.assert_not_called()
+    mock_send_reply.assert_called_with(
+        mock_client,
+        message,
+        """There are multiple lunches with that lunch_id. Please reissue the command with the time of the lunch you're interested in:
+tjs @ 11:00am
+tjs @ 12:30pm""",
+    )
+
+
+def test_handle_rsvp_disambiguate(
+    mock_client, mock_storage, mock_send_reply, make_zulip_message, make_time
+):
+    """
+    Ensures that, when there are multiple lunches, the user can construct a
+    query to disambiguate between them.
+    """
+    plan1 = Plan("tjs", make_time(11, 00), [])
+    plan2 = Plan("tjs", make_time(12, 30), [])
+    mock_storage.get.return_value = {
+        plan1.uuid: plan1,
+        plan2.uuid: plan2,
+    }
+
+    message, args = make_zulip_message("rsvp tjs 12:30")
+    handle_rsvp(mock_client, mock_storage, message, args)
+
+    mock_storage.put.assert_called_with(
+        mock_storage.PLANS_ENTRY,
+        {
+            plan1.uuid: plan1,
+            plan2.uuid: Plan("tjs", make_time(12, 30), [User("Test Sender", 5678)]),
+        },
+    )
+    mock_send_reply.assert_called_with(
+        mock_client,
+        message,
+        "Thanks for RSVPing to lunch  at tjs! Enjoy your food, Test Sender!",
+    )
+
+
 def test_handle_rsvp_success(
     mock_client, mock_storage, mock_send_reply, make_zulip_message, make_time
 ):
@@ -97,7 +155,7 @@ def test_handle_rsvp_success(
 
     mock_storage.put.assert_called_with(
         mock_storage.PLANS_ENTRY,
-        [Plan("tjs", make_time(12, 30), [User("Test Sender", 5678)])],
+        {plan.uuid: Plan("tjs", make_time(12, 30), [User("Test Sender", 5678)])},
     )
     mock_send_reply.assert_called_with(
         mock_client,

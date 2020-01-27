@@ -3,8 +3,11 @@ from collections import defaultdict
 import regex as re
 from typing import Callable
 from typing import Dict
+from typing import Optional
+from typing import List
 import zulip
 
+from lib.state_handler import StateHandler
 from lib.models.message import Message
 from lib.models.plan import Plan
 
@@ -131,3 +134,18 @@ def parse_time(date_str: str) -> datetime:
     )
 
     return time
+
+
+def get_matching_plans(
+    restaurant: str, storage: StateHandler, time: Optional[datetime] = None,
+) -> List[Plan]:
+    """
+    Returns a list of matching plans, given a restaurant name and an optional time.
+    """
+    matching_plans = []
+    plans = storage.get(StateHandler.PLANS_ENTRY)
+
+    for _, plan in plans.items():
+        if plan.restaurant == restaurant and (time is None or plan.time == time):
+            matching_plans.append(plan)
+    return matching_plans
