@@ -1,3 +1,5 @@
+import uuid
+
 from lib.handlers.make_plan import handle_make_plan
 from lib.models.plan import Plan
 from lib.models.user import User
@@ -23,20 +25,21 @@ def test_handle_make_plan_bad_args(
 
 
 def test_handle_make_plan_success(
-    mock_client, mock_storage, mock_send_reply, make_zulip_message, make_time,
+    mocker, mock_client, mock_storage, mock_send_reply, make_zulip_message, make_time,
 ):
     """
     Ensures that make_plan correctly inserts a plan when the arguments are
     correct.
     """
-    mock_storage.get.return_value = []
+    mocker.patch("uuid.uuid4", return_value="test_uuid")
+    mock_storage.get.return_value = {}
 
     message, args = make_zulip_message("make-plans tjs 12:30")
     handle_make_plan(mock_client, mock_storage, message, args)
 
     mock_storage.put.assert_called_with(
         mock_storage.PLANS_ENTRY,
-        [Plan("tjs", make_time(12, 30), [User("Test Sender", 5678)])],
+        {"test_uuid": Plan("tjs", make_time(12, 30), [User("Test Sender", 5678)])},
     )
     mock_send_reply.assert_called_with(
         mock_client, message, "I have added your plan! Enjoy lunch, Test Sender!",

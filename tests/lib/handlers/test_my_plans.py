@@ -26,9 +26,10 @@ def test_handle_my_plans_success(
     """
     Checks that, when the user has a plan, the correct list is shown.
     """
-    mock_storage.get.return_value = [
-        Plan("tjs", make_time(12, 30), [User("Test Sender", 5678)])
-    ]
+    plan = Plan("tjs", make_time(12, 30), [User("Test Sender", 5678)])
+    mock_storage.get.return_value = {
+        plan.uuid: plan,
+    }
 
     message, args = make_zulip_message("my-plans")
     handle_my_plans(mock_client, mock_storage, message, args)
@@ -36,5 +37,5 @@ def test_handle_my_plans_success(
     mock_send_reply.assert_called_with(
         mock_client,
         message,
-        "Here are the lunches you've RSVP'd to:\n0: tjs @ 12:30pm, 1 RSVP(s)",
+        "Here are the lunches you've RSVP'd to:\ntjs @ 12:30pm, 1 RSVP(s)",
     )

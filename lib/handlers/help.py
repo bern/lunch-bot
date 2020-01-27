@@ -17,13 +17,13 @@ Available Commands:
 
 `show-plans` Shows all active lunch plans along with their associated lunch_id
 
-`rsvp [lunch_id]` RSVPs to a certain lunch plan, given its [lunch_id]. To see every lunch_id, use the show-plans command.
+`rsvp [restaurant] (time)` RSVPs to a certain lunch plan, given its [lunch_id]. To see every lunch_id, use the show-plans command. If there are multiple lunch plans at the same restaurant, use the time to disambiguate them.
 
 `my-plans` Shows all lunch plans you have currently RSVP'd to.
 
-`un-rsvp [lunch_id]` Removes your RSVP from a certain lunch plan, given its [lunch_id]. To see every lunch_id, use the show-plans command.
+`un-rsvp [restaurant] (time)` Removes your RSVP from a certain lunch plan, given its [lunch_id]. To see every lunch_id, use the show-plans command. If there are multiple lunch plans at the same restaurant, use the time to disambiguate them.
 
-`delete-plan [lunch_id]` Deletes a certain lunch plan, given its [lunch_id]. To see every lunch_id, use the show-plans command."""
+`delete-plan [restaurant] (time)` Deletes a certain lunch plan, given its [lunch_id]. To see every lunch_id, use the show-plans command. If there are multiple lunch plans at the same restaurant, use the time to disambiguate them."""
 
 
 def handle_help(

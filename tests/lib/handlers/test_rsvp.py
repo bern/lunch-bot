@@ -27,7 +27,7 @@ def test_handle_rsvp_no_plans(
     """
     Ensures that handle_rsvp fails as expected when there are no plans.
     """
-    message, args = make_zulip_message("rsvp 0")
+    message, args = make_zulip_message("rsvp tjs")
     handle_rsvp(mock_client, mock_storage, message, args)
 
     mock_storage.put.assert_not_called()
@@ -38,26 +38,6 @@ def test_handle_rsvp_no_plans(
     )
 
 
-def test_handle_rsvp_malformed_id(
-    mock_client, mock_storage, mock_send_reply, make_zulip_message, make_time
-):
-    """
-    Ensures that handle_rsvp failes correctly when the plan ID is malformed
-    (i.e. it cannot be coerced to int).
-    """
-    mock_storage.get.return_value = [Plan("tjs", make_time(12, 30), [])]
-
-    message, args = make_zulip_message("rsvp not-an-id")
-    handle_rsvp(mock_client, mock_storage, message, args)
-
-    mock_storage.put.assert_not_called()
-    mock_send_reply.assert_called_with(
-        mock_client,
-        message,
-        "A lunch_id must be a number! Type show-plans to see each lunch_id and its associated lunch plan.",
-    )
-
-
 def test_handle_rsvp_bad_id(
     mock_client, mock_storage, mock_send_reply, make_zulip_message, make_time
 ):
@@ -65,9 +45,10 @@ def test_handle_rsvp_bad_id(
     Ensures that handle_rsvp failes correctly when the plan ID is not malformed
     but does not correspond to a plan.
     """
-    mock_storage.get.return_value = [Plan("tjs", make_time(12, 30), [])]
+    plan = Plan("tjs", make_time(12, 30), [])
+    mock_storage.get.return_value = {plan.uuid: plan}
 
-    message, args = make_zulip_message("rsvp 1")
+    message, args = make_zulip_message("rsvp not-tjs")
     handle_rsvp(mock_client, mock_storage, message, args)
 
     mock_storage.put.assert_not_called()
@@ -85,11 +66,10 @@ def test_handle_rsvp_already_rsvpd(
     Ensures handle_rsvp fails correctly when the user is already RSVP'd to the
     event to which they're trying to rsvp.
     """
-    mock_storage.get.return_value = [
-        Plan("tjs", make_time(12, 30), [User("Test Sender", 5678)])
-    ]
+    plan = Plan("tjs", make_time(12, 30), [User("Test Sender", 5678)])
+    mock_storage.get.return_value = {plan.uuid: plan}
 
-    message, args = make_zulip_message("rsvp 0")
+    message, args = make_zulip_message("rsvp tjs")
     handle_rsvp(mock_client, mock_storage, message, args)
 
     mock_storage.put.assert_not_called()
@@ -107,9 +87,12 @@ def test_handle_rsvp_success(
     Ensures that handle_rsvp functions correctly when the preconditions are
     met.
     """
-    mock_storage.get.return_value = [Plan("tjs", make_time(12, 30), [])]
+    plan = Plan("tjs", make_time(12, 30), [])
+    mock_storage.get.return_value = {
+        plan.uuid: plan,
+    }
 
-    message, args = make_zulip_message("rsvp 0")
+    message, args = make_zulip_message("rsvp tjs")
     handle_rsvp(mock_client, mock_storage, message, args)
 
     mock_storage.put.assert_called_with(
