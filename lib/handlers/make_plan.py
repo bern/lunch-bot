@@ -40,11 +40,21 @@ def handle_make_plan(
         )
         return
 
-    user = User.get_sender(message)
-    plan = Plan(args[1], plan_time, [user])
-
     if not storage.contains(storage.PLANS_ENTRY):
         storage.put(storage.PLANS_ENTRY, {})
+
+    plans = storage.get(storage.PLANS_ENTRY)
+    for _, plan in plans.items():
+        if plan.restaurant == args[1] and plan.time == plan_time:
+            common.send_reply(
+                client,
+                message,
+                "Sorry, there is already a plan with that name and time. How about you RSVP instead?",
+            )
+            return
+
+    user = User.get_sender(message)
+    plan = Plan(args[1], plan_time, [user])
 
     plans = storage.get(storage.PLANS_ENTRY)
     plans[plan.uuid] = plan

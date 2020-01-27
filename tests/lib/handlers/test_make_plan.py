@@ -24,6 +24,27 @@ def test_handle_make_plan_bad_args(
     )
 
 
+def test_handle_make_plan_existing_plan(
+    mocker, mock_client, mock_storage, mock_send_reply, make_zulip_message, make_time,
+):
+    """
+    Ensures that, when there is already an existing plan with the intended name,
+    we prevent the user from making another one.
+    """
+    plan = Plan("tjs", make_time(12, 30), [])
+    mock_storage.get.return_value = {plan.uuid: plan}
+
+    message, args = make_zulip_message("make-plan tjs 12:30")
+    handle_make_plan(mock_client, mock_storage, message, args)
+
+    mock_storage.put.assert_not_called()
+    mock_send_reply.assert_called_with(
+        mock_client,
+        message,
+        "Sorry, there is already a plan with that name and time. How about you RSVP instead?",
+    )
+
+
 def test_handle_make_plan_success(
     mocker, mock_client, mock_storage, mock_send_reply, make_zulip_message, make_time,
 ):
