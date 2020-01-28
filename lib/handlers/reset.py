@@ -11,7 +11,7 @@ def handle_reset(
     client: zulip.Client, storage: StateHandler, message: Message, args: List[str],
 ):
     if len(args) == 2 and args[1] == "confirm":
-        storage.put(storage.PLANS_ENTRY, [])
+        storage.put(storage.PLANS_ENTRY, {})
         return
 
     common.send_reply(

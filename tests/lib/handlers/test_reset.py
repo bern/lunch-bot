@@ -33,5 +33,5 @@ def test_handle_rest_confirm_success(
         mock_client, mock_storage, message, args,
     )
 
-    mock_storage.put.assert_called_with(mock_storage.PLANS_ENTRY, [])
+    mock_storage.put.assert_called_with(mock_storage.PLANS_ENTRY, {})
     mock_send_reply.assert_not_called()

@@ -26,11 +26,12 @@ def test_handle_show_plans_success(
     Ensures that, if there are plans, handle_show_plans shows the user all of
     the plans.
     """
-    mock_storage.get.return_value = [Plan("tjs", make_time(12, 30), [])]
+    plan = Plan("tjs", make_time(12, 30), [])
+    mock_storage.get.return_value = {
+        plan.uuid: plan,
+    }
 
     message, args = make_zulip_message("show-plans")
     handle_show_plans(mock_client, mock_storage, message, args)
 
-    mock_send_reply.assert_called_with(
-        mock_client, message, "0: tjs @ 12:30pm, 0 RSVP(s)"
-    )
+    mock_send_reply.assert_called_with(mock_client, message, "tjs @ 12:30pm, 0 RSVPs")

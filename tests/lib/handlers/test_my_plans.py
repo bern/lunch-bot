@@ -20,15 +20,18 @@ def test_handle_my_plans_no_plans(
     )
 
 
-def test_handle_my_plans_success(
+def test_handle_my_plans_only_in_rsvps(
     mock_client, mock_storage, mock_send_reply, make_zulip_message, make_time
 ):
     """
-    Checks that, when the user has a plan, the correct list is shown.
+    Checks that the user only appears in plans they have RSVP'd to.
     """
-    mock_storage.get.return_value = [
-        Plan("tjs", make_time(12, 30), [User("Test Sender", 5678)])
-    ]
+    plan1 = Plan("tjs", make_time(11, 00), [])
+    plan2 = Plan("tjs", make_time(12, 30), [User("Test Sender", 5678)])
+    mock_storage.get.return_value = {
+        plan1.uuid: plan1,
+        plan2.uuid: plan2,
+    }
 
     message, args = make_zulip_message("my-plans")
     handle_my_plans(mock_client, mock_storage, message, args)
@@ -36,5 +39,26 @@ def test_handle_my_plans_success(
     mock_send_reply.assert_called_with(
         mock_client,
         message,
-        "Here are the lunches you've RSVP'd to:\n0: tjs @ 12:30pm, 1 RSVP(s)",
+        "Here are the lunches you've RSVP'd to:\ntjs @ 12:30pm, 1 RSVP",
+    )
+
+
+def test_handle_my_plans_success(
+    mock_client, mock_storage, mock_send_reply, make_zulip_message, make_time
+):
+    """
+    Checks that, when the user has a plan, the correct list is shown.
+    """
+    plan = Plan("tjs", make_time(12, 30), [User("Test Sender", 5678)])
+    mock_storage.get.return_value = {
+        plan.uuid: plan,
+    }
+
+    message, args = make_zulip_message("my-plans")
+    handle_my_plans(mock_client, mock_storage, message, args)
+
+    mock_send_reply.assert_called_with(
+        mock_client,
+        message,
+        "Here are the lunches you've RSVP'd to:\ntjs @ 12:30pm, 1 RSVP",
     )

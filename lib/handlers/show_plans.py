@@ -20,15 +20,9 @@ def handle_show_plans(
         )
         return
 
+    plans = storage.get(storage.PLANS_ENTRY)
     common.send_reply(
         client,
         message,
-        "\n".join(
-            [
-                "{}: {} @ {}, {} RSVP(s)".format(
-                    i, plan.restaurant, common.render_plan_time(plan), len(plan.rsvps)
-                )
-                for i, plan in enumerate(storage.get(storage.PLANS_ENTRY))
-            ]
-        ),
+        "\n".join([common.render_plan(plan) for _, plan in plans.items()]),
     )

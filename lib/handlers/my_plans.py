@@ -21,6 +21,7 @@ def handle_my_plans(
         )
         return
 
+    plans = storage.get(storage.PLANS_ENTRY)
     user = User.get_sender(message)
     common.send_reply(
         client,
@@ -28,13 +29,8 @@ def handle_my_plans(
         "Here are the lunches you've RSVP'd to:\n{}".format(
             "\n".join(
                 [
-                    "{}: {} @ {}, {} RSVP(s)".format(
-                        i,
-                        plan.restaurant,
-                        common.render_plan_time(plan),
-                        len(plan.rsvps),
-                    )
-                    for i, plan in enumerate(storage.get(storage.PLANS_ENTRY))
+                    common.render_plan(plan)
+                    for _, plan in plans.items()
                     if user in plan.rsvps
                 ]
             )
