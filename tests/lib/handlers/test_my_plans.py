@@ -4,61 +4,63 @@ from lib.models.user import User
 
 
 def test_handle_my_plans_no_plans(
-    mock_client, mock_storage, mock_send_reply, make_zulip_message
+    mock_send_reply, make_handler_params,
 ):
     """
-    Checks that, when the user has no plans, the correct error message is
+    Checks that, when the user has no plans, the correct error params.message is
     shown.
     """
-    message, args = make_zulip_message("my-plans")
-    handle_my_plans(mock_client, mock_storage, message, args)
+    params = make_handler_params("my-plans")
+    handle_my_plans(params)
 
     mock_send_reply.assert_called_with(
-        mock_client,
-        message,
+        params.client,
+        params.message,
         "There are no active lunch plans right now! Why not add one using the make-plan command?",
     )
 
 
 def test_handle_my_plans_only_in_rsvps(
-    mock_client, mock_storage, mock_send_reply, mock_user, make_zulip_message, make_time
+    mock_send_reply, mock_user, make_handler_params, make_time,
 ):
     """
     Checks that the user only appears in plans they have RSVP'd to.
     """
+    params = make_handler_params("my-plans")
+
     plan1 = Plan("tjs", make_time(11, 00), [])
     plan2 = Plan("tjs", make_time(12, 30), [mock_user])
-    mock_storage.get.return_value = {
+    params.storage.get.return_value = {
         plan1.uuid: plan1,
         plan2.uuid: plan2,
     }
 
-    message, args = make_zulip_message("my-plans")
-    handle_my_plans(mock_client, mock_storage, message, args)
+    handle_my_plans(params)
 
     mock_send_reply.assert_called_with(
-        mock_client,
-        message,
+        params.client,
+        params.message,
         "Here are the lunches you've RSVP'd to:\ntjs @ 12:30pm, 1 RSVP",
     )
 
 
 def test_handle_my_plans_success(
-    mock_client, mock_storage, mock_send_reply, mock_user, make_zulip_message, make_time
+    mock_send_reply, mock_user, make_handler_params, make_time,
 ):
     """
     Checks that, when the user has a plan, the correct list is shown.
     """
+    params = make_handler_params("my-plans")
+
     plan = Plan("tjs", make_time(12, 30), [mock_user])
-    mock_storage.get.return_value = {
+    params.storage.get.return_value = {
         plan.uuid: plan,
     }
 
-    message, args = make_zulip_message("my-plans")
-    handle_my_plans(mock_client, mock_storage, message, args)
+    handle_my_plans(params)
 
     mock_send_reply.assert_called_with(
-        mock_client,
-        message,
+        params.client,
+        params.message,
         "Here are the lunches you've RSVP'd to:\ntjs @ 12:30pm, 1 RSVP",
     )

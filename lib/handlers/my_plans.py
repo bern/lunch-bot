@@ -2,30 +2,29 @@ from typing import List
 import zulip
 
 from lib import common
+from lib.handlers import HandlerParams
 from lib.models.message import Message
 from lib.models.user import User
 from lib.state_handler import StateHandler
 
 
-def handle_my_plans(
-    client: zulip.Client, storage: StateHandler, message: Message, args: List[str]
-):
+def handle_my_plans(params: HandlerParams):
     if (
-        not storage.contains(storage.PLANS_ENTRY)
-        or len(storage.get(storage.PLANS_ENTRY)) == 0
+        not params.storage.contains(params.storage.PLANS_ENTRY)
+        or len(params.storage.get(params.storage.PLANS_ENTRY)) == 0
     ):
         common.send_reply(
-            client,
-            message,
+            params.client,
+            params.message,
             "There are no active lunch plans right now! Why not add one using the make-plan command?",
         )
         return
 
-    plans = storage.get(storage.PLANS_ENTRY)
-    user = User.get_sender(message)
+    plans = params.storage.get(params.storage.PLANS_ENTRY)
+    user = User.get_sender(params.message)
     common.send_reply(
-        client,
-        message,
+        params.client,
+        params.message,
         "Here are the lunches you've RSVP'd to:\n{}".format(
             "\n".join(
                 [

@@ -4,6 +4,7 @@ from typing import Tuple
 import pytest
 
 from lib import common
+from lib.handlers import HandlerParams
 from lib.models.message import DisplayRecipient
 from lib.models.message import Message
 from lib.models.user import User
@@ -67,6 +68,18 @@ def make_zulip_message(mock_user: User):
         return message, args
 
     return _make_zulip_message
+
+
+@pytest.fixture
+def make_handler_params(mock_client, mock_storage, make_zulip_message):
+    def _make_handler_params(contents: str):
+        message, args = make_zulip_message(contents)
+
+        return HandlerParams(
+            args=args, client=mock_client, message=message, storage=mock_storage,
+        )
+
+    return _make_handler_params
 
 
 @pytest.fixture

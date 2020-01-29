@@ -3,35 +3,38 @@ from lib.models.plan import Plan
 
 
 def test_handle_show_plans_no_plans(
-    mock_client, mock_storage, mock_send_reply, make_zulip_message
+    mock_send_reply, make_handler_params,
 ):
     """
     Ensures that, if there are no plans, handle_show_plans reports that to the
     user.
     """
-    message, args = make_zulip_message("show-plans")
-    handle_show_plans(mock_client, mock_storage, message, args)
+    params = make_handler_params("show-plans")
+    handle_show_plans(params)
 
     mock_send_reply.assert_called_with(
-        mock_client,
-        message,
+        params.client,
+        params.message,
         "There are no lunch plans to show! Why not add one using the make-plan command?",
     )
 
 
 def test_handle_show_plans_success(
-    mock_client, mock_storage, mock_send_reply, make_zulip_message, make_time
+    mock_send_reply, make_handler_params, make_time,
 ):
     """
     Ensures that, if there are plans, handle_show_plans shows the user all of
     the plans.
     """
+    params = make_handler_params("show-plans")
+
     plan = Plan("tjs", make_time(12, 30), [])
-    mock_storage.get.return_value = {
+    params.storage.get.return_value = {
         plan.uuid: plan,
     }
 
-    message, args = make_zulip_message("show-plans")
-    handle_show_plans(mock_client, mock_storage, message, args)
+    handle_show_plans(params)
 
-    mock_send_reply.assert_called_with(mock_client, message, "tjs @ 12:30pm, 0 RSVPs")
+    mock_send_reply.assert_called_with(
+        params.client, params.message, "tjs @ 12:30pm, 0 RSVPs"
+    )
