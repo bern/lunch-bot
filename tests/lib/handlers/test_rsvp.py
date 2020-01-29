@@ -60,13 +60,13 @@ def test_handle_rsvp_bad_id(
 
 
 def test_handle_rsvp_already_rsvpd(
-    mock_client, mock_storage, mock_send_reply, make_zulip_message, make_time
+    mock_client, mock_storage, mock_send_reply, mock_user, make_zulip_message, make_time
 ):
     """
     Ensures handle_rsvp fails correctly when the user is already RSVP'd to the
     event to which they're trying to rsvp.
     """
-    plan = Plan("tjs", make_time(12, 30), [User("Test Sender", 5678)])
+    plan = Plan("tjs", make_time(12, 30), [mock_user])
     mock_storage.get.return_value = {plan.uuid: plan}
 
     message, args = make_zulip_message("rsvp tjs")
@@ -108,7 +108,7 @@ tjs @ 12:30pm""",
 
 
 def test_handle_rsvp_disambiguate(
-    mock_client, mock_storage, mock_send_reply, make_zulip_message, make_time
+    mock_client, mock_storage, mock_send_reply, mock_user, make_zulip_message, make_time
 ):
     """
     Ensures that, when there are multiple lunches, the user can construct a
@@ -126,10 +126,7 @@ def test_handle_rsvp_disambiguate(
 
     mock_storage.put.assert_called_with(
         mock_storage.PLANS_ENTRY,
-        {
-            plan1.uuid: plan1,
-            plan2.uuid: Plan("tjs", make_time(12, 30), [User("Test Sender", 5678)]),
-        },
+        {plan1.uuid: plan1, plan2.uuid: Plan("tjs", make_time(12, 30), [mock_user])},
     )
     mock_send_reply.assert_called_with(
         mock_client,
@@ -139,7 +136,7 @@ def test_handle_rsvp_disambiguate(
 
 
 def test_handle_rsvp_success(
-    mock_client, mock_storage, mock_send_reply, make_zulip_message, make_time
+    mock_client, mock_storage, mock_send_reply, mock_user, make_zulip_message, make_time
 ):
     """
     Ensures that handle_rsvp functions correctly when the preconditions are
@@ -155,7 +152,7 @@ def test_handle_rsvp_success(
 
     mock_storage.put.assert_called_with(
         mock_storage.PLANS_ENTRY,
-        {plan.uuid: Plan("tjs", make_time(12, 30), [User("Test Sender", 5678)])},
+        {plan.uuid: Plan("tjs", make_time(12, 30), [mock_user])},
     )
     mock_send_reply.assert_called_with(
         mock_client,

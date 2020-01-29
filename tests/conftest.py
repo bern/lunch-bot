@@ -6,6 +6,7 @@ import pytest
 from lib import common
 from lib.models.message import DisplayRecipient
 from lib.models.message import Message
+from lib.models.user import User
 
 
 @pytest.fixture(autouse=True)
@@ -32,16 +33,21 @@ def mock_send_reply(mocker):
 
 
 @pytest.fixture
-def make_zulip_message():
+def mock_user():
+    return User(email="tester@email.com", full_name="Test Sender", id=5678)
+
+
+@pytest.fixture
+def make_zulip_message(mock_user: User):
     def _make_zulip_message(contents: str) -> Tuple[Message, List[str]]:
         message = Message(
             content=contents,
             display_recipient=[
                 DisplayRecipient(
-                    email="tester@email.com",
-                    full_name="Test Sender",
+                    email=mock_user.email,
+                    full_name=mock_user.full_name,
                     is_mirror_dummy=False,
-                    id=5678,
+                    id=mock_user.id,
                     short_name="tester",
                 ),
                 DisplayRecipient(
@@ -52,9 +58,9 @@ def make_zulip_message():
                     short_name="lunch-bot-bot",
                 ),
             ],
-            sender_email="tester@email.com",
-            sender_full_name="Test Sender",
-            sender_id=5678,
+            sender_email=mock_user.email,
+            sender_full_name=mock_user.full_name,
+            sender_id=mock_user.id,
         )
         args = contents.split()
 

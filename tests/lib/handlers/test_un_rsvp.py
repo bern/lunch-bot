@@ -40,13 +40,13 @@ def test_handle_un_rsvp_no_lunches(
 
 
 def test_handle_un_rsvp_bad_id(
-    mock_client, mock_storage, mock_send_reply, make_zulip_message, make_time
+    mock_client, mock_storage, mock_send_reply, mock_user, make_zulip_message, make_time
 ):
     """
     Ensures that handle_un_rsvp fails as expected when the user provides an id
     that is out of range of our available lunches.
     """
-    plan = Plan("tjs", make_time(12, 30), [User("Test Sender", 5678)])
+    plan = Plan("tjs", make_time(12, 30), [mock_user])
     mock_storage.get.return_value = {
         plan.uuid: plan,
     }
@@ -111,14 +111,14 @@ tjs @ 12:30pm""",
 
 
 def test_handle_un_rsvp_disambiguate(
-    mock_client, mock_storage, mock_send_reply, make_zulip_message, make_time
+    mock_client, mock_storage, mock_send_reply, mock_user, make_zulip_message, make_time
 ):
     """
     Ensures that, when the user has provided an ambiguous query, handle_un_rsvp
     prompts them to disambiguate.
     """
     plan1 = Plan("tjs", make_time(11, 00), [])
-    plan2 = Plan("tjs", make_time(12, 30), [User("Test Sender", 5678)])
+    plan2 = Plan("tjs", make_time(12, 30), [mock_user])
     mock_storage.get.return_value = {
         plan1.uuid: plan1,
         plan2.uuid: plan2,
@@ -137,13 +137,13 @@ def test_handle_un_rsvp_disambiguate(
 
 
 def test_handle_un_rsvp_success(
-    mock_client, mock_storage, mock_send_reply, make_zulip_message, make_time
+    mock_client, mock_storage, mock_send_reply, mock_user, make_zulip_message, make_time
 ):
     """
     Ensures that handle_un_rsvp succeeds when the required preconditions are
     met.
     """
-    plan = Plan("tjs", make_time(12, 30), [User("Test Sender", 5678)])
+    plan = Plan("tjs", make_time(12, 30), [mock_user])
     mock_storage.get.return_value = {
         plan.uuid: plan,
     }

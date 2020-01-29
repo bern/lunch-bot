@@ -2,7 +2,10 @@ from lib.models.message import Message
 
 
 class User:
-    def __init__(self, full_name: str, id: int):
+    def __init__(
+        self, email: str = "", full_name: str = "", id: int = 0,
+    ):
+        self.email = email
         self.full_name = full_name
         self.id = id
 
@@ -20,4 +23,8 @@ class User:
         """
         Given a message from Zulip, construct the user that is the sender.
         """
-        return User(message.sender_full_name, message.sender_id)
+        return User(
+            email=message.sender_email,
+            full_name=message.sender_full_name,
+            id=message.sender_id,
+        )

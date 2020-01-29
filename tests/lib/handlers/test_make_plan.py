@@ -46,7 +46,13 @@ def test_handle_make_plan_existing_plan(
 
 
 def test_handle_make_plan_success(
-    mocker, mock_client, mock_storage, mock_send_reply, make_zulip_message, make_time,
+    mocker,
+    mock_client,
+    mock_storage,
+    mock_send_reply,
+    mock_user,
+    make_zulip_message,
+    make_time,
 ):
     """
     Ensures that make_plan correctly inserts a plan when the arguments are
@@ -60,7 +66,7 @@ def test_handle_make_plan_success(
 
     mock_storage.put.assert_called_with(
         mock_storage.PLANS_ENTRY,
-        {"test_uuid": Plan("tjs", make_time(12, 30), [User("Test Sender", 5678)])},
+        {"test_uuid": Plan("tjs", make_time(12, 30), [mock_user])},
     )
     mock_send_reply.assert_called_with(
         mock_client, message, "I have added your plan! Enjoy lunch, Test Sender!",
