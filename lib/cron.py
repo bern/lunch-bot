@@ -61,4 +61,6 @@ class Cron:
         except ValueError:
             return False
 
+        self.scheduled_events.pop(event_id)
+
         return True
