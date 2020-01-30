@@ -1,8 +1,11 @@
 from typing import Any
 from typing import Dict
+from typing import Callable
 import zulip
 
 from lib import state_handler
+from lib.handlers import HandlerParams
+from lib.handlers.alert_leaving import handle_alert_leaving
 from lib.handlers.delete_plan import handle_delete_plan
 from lib.handlers.help import handle_help
 from lib.handlers.make_plan import handle_make_plan
@@ -24,8 +27,9 @@ class LunchBotHandler(object):
         self.client = client
         self.storage = storage
 
-        self.default_handler = handle_not_a_command
-        self.handlers = {
+        self.default_handler: Callable[[HandlerParams], None] = handle_not_a_command
+        self.handlers: Dict[str, Callable[[HandlerParams], None]] = {
+            "alert-leaving": handle_alert_leaving,
             "delete-plan": handle_delete_plan,
             "help": handle_help,
             "make-plan": handle_make_plan,
@@ -69,5 +73,10 @@ class LunchBotHandler(object):
             return
 
         self.handlers.get(args[0], self.default_handler)(
-            self.client, self.storage, parsed_message, args
+            HandlerParams(
+                args=args,
+                client=self.client,
+                message=parsed_message,
+                storage=self.storage,
+            ),
         )

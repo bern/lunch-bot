@@ -1,9 +1,5 @@
-from typing import List
-import zulip
-
 from lib import common
-from lib.models.message import Message
-from lib.state_handler import StateHandler
+from lib.handlers import HandlerParams
 
 
 HELP_MESSAGE = """
@@ -26,9 +22,7 @@ Available Commands:
 `delete-plan [restaurant] (time)` Deletes a certain lunch plan, given its [lunch_id]. To see every lunch_id, use the show-plans command. If there are multiple lunch plans at the same restaurant, use the time to disambiguate them."""
 
 
-def handle_help(
-    client: zulip.Client, storage: StateHandler, message: Message, args: List[str],
-):
+def handle_help(params: HandlerParams):
     common.send_reply(
-        client, message, HELP_MESSAGE,
+        params.client, params.message, HELP_MESSAGE,
     )
