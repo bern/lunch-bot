@@ -107,6 +107,7 @@ def test_handle_delete_plan_disambiguate(
     params.storage.put.assert_called_with(
         params.storage.PLANS_ENTRY, {plan1.uuid: plan1}
     )
+    params.cron.remove_event.assert_called_with(plan2.uuid)
     mock_send_reply.assert_called_with(
         params.client,
         params.message,
@@ -125,7 +126,7 @@ def test_handle_delete_plan_success(
     handle_delete_plan(params)
 
     params.storage.put.assert_called_with(params.storage.PLANS_ENTRY, {})
-    params.cron.remove_event.assert_called()
+    params.cron.remove_event.assert_called_with(plan.uuid)
     mock_send_reply.assert_called_with(
         params.client,
         params.message,
