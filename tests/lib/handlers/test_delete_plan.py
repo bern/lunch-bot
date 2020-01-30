@@ -1,7 +1,4 @@
-import pytest
-
 from lib.handlers.delete_plan import handle_delete_plan
-from lib.state_handler import StateHandler
 from lib.models.plan import Plan
 
 
@@ -82,9 +79,10 @@ def test_handle_delete_plan_ambiguous(
     mock_send_reply.assert_called_with(
         params.client,
         params.message,
-        """There are multiple lunches with that lunch_id. Please reissue the command with the time of the lunch you're interested in:
-tjs @ 11:00am
-tjs @ 12:30pm""",
+        "There are multiple lunches with that lunch_id. Please reissue the command with the time of the lunch you're"
+        " interested in:\n"
+        "tjs @ 11:00am\n"
+        "tjs @ 12:30pm",
     )
 
 
@@ -127,6 +125,7 @@ def test_handle_delete_plan_success(
     handle_delete_plan(params)
 
     params.storage.put.assert_called_with(params.storage.PLANS_ENTRY, {})
+    params.cron.remove_event.assert_called()
     mock_send_reply.assert_called_with(
         params.client,
         params.message,

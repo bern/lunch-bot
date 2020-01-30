@@ -1,6 +1,7 @@
 from typing import List
 import zulip
 
+from lib.cron import Cron
 from lib.models.message import Message
 from lib.state_handler import StateHandler
 
@@ -17,10 +18,12 @@ class HandlerParams:
         *,
         args: List[str],
         client: zulip.Client,
+        cron: Cron,
         message: Message,
         storage: StateHandler,
     ):
-        self.client = client
-        self.storage = storage
-        self.message = message
         self.args = args
+        self.client = client
+        self.cron = cron
+        self.message = message
+        self.storage = storage

@@ -1,13 +1,10 @@
-from datetime import datetime
-from typing import List
-import zulip
+from datetime import timedelta
 
 from lib import common
 from lib.handlers import HandlerParams
-from lib.models.message import Message
+from lib.handlers.alert_leaving import alert_leaving
 from lib.models.plan import Plan
 from lib.models.user import User
-from lib.state_handler import StateHandler
 
 
 def handle_make_plan(params: HandlerParams):
@@ -21,7 +18,7 @@ def handle_make_plan(params: HandlerParams):
 
     try:
         plan_time = common.parse_time(params.args[2])
-    except ValueError as e:
+    except ValueError:
         common.send_reply(
             params.client,
             params.message,
@@ -62,4 +59,10 @@ def handle_make_plan(params: HandlerParams):
         params.client,
         params.message,
         "I have added your plan! Enjoy lunch, {}!".format(user.full_name),
+    )
+
+    params.cron.add_event(
+        (plan.time - timedelta(minutes=15)).timestamp(),
+        lambda: alert_leaving(params.client, plan),
+        plan.uuid,
     )

@@ -1,5 +1,8 @@
+import zulip
+
 from lib import common
 from lib.handlers import HandlerParams
+from lib.models.plan import Plan
 
 
 def handle_alert_leaving(params: HandlerParams):
@@ -55,9 +58,15 @@ def handle_alert_leaving(params: HandlerParams):
         )
         return
 
-    plan = matching_plans[0]
+    alert_leaving(params.client, matching_plans[0])
+
+
+def alert_leaving(client: zulip.Client, plan: Plan):
+    """
+    Controller for alert_leaving. Executes if everything else goes well.
+    """
     now = common.get_now()
-    params.client.send_message(
+    client.send_message(
         {
             "type": "private",
             "to": [user.email for user in plan.rsvps],

@@ -24,6 +24,11 @@ def mock_client(mocker):
 
 
 @pytest.fixture
+def mock_cron(mocker):
+    return mocker.patch("lib.cron.Cron")
+
+
+@pytest.fixture
 def mock_storage(mocker):
     return mocker.patch("lib.state_handler.StateHandler")
 
@@ -71,12 +76,16 @@ def make_zulip_message(mock_user: User):
 
 
 @pytest.fixture
-def make_handler_params(mock_client, mock_storage, make_zulip_message):
+def make_handler_params(mock_client, mock_cron, mock_storage, make_zulip_message):
     def _make_handler_params(contents: str):
         message, args = make_zulip_message(contents)
 
         return HandlerParams(
-            args=args, client=mock_client, message=message, storage=mock_storage,
+            args=args,
+            client=mock_client,
+            cron=mock_cron,
+            message=message,
+            storage=mock_storage,
         )
 
     return _make_handler_params

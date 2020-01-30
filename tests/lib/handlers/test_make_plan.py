@@ -64,6 +64,9 @@ def test_handle_make_plan_success(
         params.storage.PLANS_ENTRY,
         {"test_uuid": Plan("tjs", make_time(12, 30), [mock_user])},
     )
+
+    params.cron.add_event.assert_called()
+
     mock_send_reply.assert_called_with(
         params.client,
         params.message,
