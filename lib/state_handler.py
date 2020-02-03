@@ -15,6 +15,7 @@ class StateHandler:
     OPEN_ERROR = ValueError("StateHandler must not be open")
     NOT_OPEN_ERROR = ValueError("StateHandler must be open")
 
+    EVENTS_ENTRY = "events"
     PLANS_ENTRY = "lunches"
 
     def __init__(self):
