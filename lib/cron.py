@@ -100,10 +100,12 @@ class PersistentCron:
         self.storage = storage
 
         events = self._get_persistent_events()
+        rm_events = []
         now = time.time()
-        for event in events.values():
+
+        for event_id, event in events.items():
             if event.event_time < now:
-                # TODO: Decide what to do with old events
+                rm_events.append(event_id)
                 continue
 
             self.cron.add_event(
@@ -111,6 +113,12 @@ class PersistentCron:
                 event.event_generator.generate_action(self.client, self.storage),
                 event.event_id,
             )
+
+        # Removing events outside of the earlier for loop so we don't break the
+        # iterator.
+        for rm_event_id in rm_events:
+            events.pop(rm_event_id)
+        self.storage.put(StateHandler.EVENTS_ENTRY, events)
 
     def _get_persistent_events(self) -> Dict[uuid.UUID, CronEvent]:
         """
