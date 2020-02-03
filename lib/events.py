@@ -27,5 +27,10 @@ class AlertLeavingGenerator(EventGenerator):
     def __init__(self, plan: Plan):
         self.plan = plan
 
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, AlertLeavingGenerator):
+            return False
+        return self.plan == other.plan
+
     def generate_action(self, client: zulip.Client, storage: StateHandler) -> Callable:
         return lambda: alert_leaving(client, self.plan)

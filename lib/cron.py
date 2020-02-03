@@ -86,6 +86,15 @@ class CronEvent:
         self.event_id = event_id
         self.event_time = event_time
 
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, CronEvent):
+            return False
+        return (
+            self.event_generator == other.event_generator
+            and self.event_id == other.event_id
+            and self.event_time == other.event_time
+        )
+
 
 class PersistentCron:
     """
