@@ -4,7 +4,7 @@ from typing import Callable
 import zulip
 
 from lib import state_handler
-from lib.cron import Cron
+from lib.cron import PersistentCron
 from lib.handlers import HandlerParams
 from lib.handlers.alert_leaving import handle_alert_leaving
 from lib.handlers.delete_plan import handle_delete_plan
@@ -25,7 +25,10 @@ class LunchBotHandler(object):
     """
 
     def __init__(
-        self, client: zulip.Client, cron: Cron, storage: state_handler.StateHandler
+        self,
+        client: zulip.Client,
+        cron: PersistentCron,
+        storage: state_handler.StateHandler,
     ):
         self.client = client
         self.cron = cron

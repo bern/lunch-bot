@@ -1,7 +1,7 @@
 from typing import List
 import zulip
 
-from lib.cron import Cron
+from lib.cron import PersistentCron
 from lib.models.message import Message
 from lib.state_handler import StateHandler
 
@@ -18,7 +18,7 @@ class HandlerParams:
         *,
         args: List[str],
         client: zulip.Client,
-        cron: Cron,
+        cron: PersistentCron,
         message: Message,
         storage: StateHandler,
     ):

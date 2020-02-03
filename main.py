@@ -17,11 +17,10 @@ def main(args: List[str]):
         config_file=path.join(path.abspath(os.getcwd()), ZULIPRC_FILE_NAME)
     )
 
-    # TODO (#4): Schedule a thing to clear plans every midnight, E(D|S)T.
     try:
         with state_handler.StateHandler() as storage:
-            cron = PersistentCron(storage)
-            bot = lunch_bot.LunchBotHandler(client, cron, storage,)
+            cron = PersistentCron(client, storage)
+            bot = lunch_bot.LunchBotHandler(client, cron, storage)
             client.call_on_each_message(bot.handle_message)
     except KeyboardInterrupt:
         pass

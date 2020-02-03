@@ -5,7 +5,9 @@ from typing import Callable
 from typing import Dict
 from typing import Optional
 import uuid
+import zulip
 
+from lib.events import EventGenerator
 from lib.state_handler import StateHandler
 
 
@@ -68,28 +70,34 @@ class Cron:
         return True
 
 
-class PersistentCron(Cron):
+class CronEvent:
+    """
+    Serializable representation of an event that may be scheduled.
+    """
+
+    def __init__(
+        self,
+        *,
+        event_generator: EventGenerator,
+        event_id: uuid.UUID,
+        event_time: float,
+    ):
+        self.event_generator = event_generator
+        self.event_id = event_id
+        self.event_time = event_time
+
+
+class PersistentCron:
     """
     A persistent form of Cron that automatically saves queued events to disk.
     Reloads them when starting up, so that events can be rescheduled after a
     restart.
     """
 
-    class CronEvent:
-        """
-        Serializable representation of an event that may be scheduled.
-        """
-
-        def __init__(
-            self, *, event_action: Callable, event_id: uuid.UUID, event_time: float,
-        ):
-            self.event_action = event_action
-            self.event_id = event_id
-            self.event_time = event_time
-
-    def __init__(self, storage: StateHandler):
+    def __init__(self, client: zulip.Client, storage: StateHandler):
+        self.cron = Cron()
+        self.client = client
         self.storage = storage
-        super().__init__()
 
         events = self._get_persistent_events()
         now = time.time()
@@ -97,8 +105,11 @@ class PersistentCron(Cron):
             if event.event_time < now:
                 # TODO: Decide what to do with old events
                 continue
-            super().add_event(
-                event.event_time, event.event_action, event.event_id,
+
+            self.cron.add_event(
+                event.event_time,
+                event.event_generator.generate_action(self.client, self.storage),
+                event.event_id,
             )
 
     def _get_persistent_events(self) -> Dict[uuid.UUID, CronEvent]:
@@ -113,18 +124,22 @@ class PersistentCron(Cron):
     def add_event(
         self,
         event_time: float,
-        event_action: Callable,
+        event_generator: EventGenerator,
         event_id: Optional[uuid.UUID] = None,
     ) -> uuid.UUID:
         """
         Adds an event to the queue, and persists it to disk so that it can be
         reloaded later.
         """
-        event_id = super().add_event(event_time, event_action, event_id)
+        event_id = self.cron.add_event(
+            event_time,
+            event_generator.generate_action(self.client, self.storage),
+            event_id,
+        )
 
         events = self._get_persistent_events()
-        events[event_id] = PersistentCron.CronEvent(
-            event_action=event_action, event_id=event_id, event_time=event_time,
+        events[event_id] = CronEvent(
+            event_generator=event_generator, event_id=event_id, event_time=event_time,
         )
         self.storage.put(StateHandler.EVENTS_ENTRY, events)
 
@@ -134,14 +149,13 @@ class PersistentCron(Cron):
         """
         Removes an event from the queue, and
         """
-        if not super().remove_event(event_id):
-            return False
-
         events = self._get_persistent_events()
-        try:
-            events.pop(event_id)
-        except KeyError:
-            return False
-        self.storage.put(StateHandler.EVENTS_ENTRY, events)
 
-        return True
+        persistent_removed = False
+        if event_id in events:
+            persistent_removed = True
+            events.pop(event_id)
+
+        queue_removed = self.cron.remove_event(event_id)
+
+        return persistent_removed or queue_removed
