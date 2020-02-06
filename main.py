@@ -21,7 +21,7 @@ def main(args: List[str]):
         with state_handler.StateHandler() as storage:
             cron = PersistentCron(client, storage)
             bot = lunch_bot.LunchBotHandler(client, cron, storage)
-            client.call_on_each_message(bot.handle_message)
+            client.call_on_each_message(bot.safe_handle_message)
     except KeyboardInterrupt:
         pass
     print()

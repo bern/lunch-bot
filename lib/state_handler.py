@@ -1,7 +1,5 @@
 import shelve
-import traceback
 from typing import Any
-from typing import Optional
 
 
 class StateHandler:
@@ -36,7 +34,7 @@ class StateHandler:
         return self
 
     def is_open(self) -> bool:
-        return not self._db is None
+        return self._db is not None
 
     def close(self):
         if not self.is_open():

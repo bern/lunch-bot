@@ -1,6 +1,6 @@
 from datetime import datetime
 from collections import defaultdict
-import regex as re
+import re
 from typing import Callable
 from typing import Dict
 from typing import Optional

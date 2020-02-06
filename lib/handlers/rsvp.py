@@ -1,11 +1,6 @@
-from typing import List
-import zulip
-
 from lib import common
 from lib.handlers import HandlerParams
-from lib.models.message import Message
 from lib.models.user import User
-from lib.state_handler import StateHandler
 
 
 def handle_rsvp(params: HandlerParams):
@@ -49,7 +44,8 @@ def handle_rsvp(params: HandlerParams):
         common.send_reply(
             params.client,
             params.message,
-            "There are multiple lunches with that lunch_id. Please reissue the command with the time of the lunch you're interested in:\n{}".format(
+            "There are multiple lunches with that lunch_id. Please reissue the command with the time of the lunch"
+            "you're interested in:\n{}".format(
                 "\n".join([common.render_plan_short(plan) for plan in matching_plans]),
             ),
         )

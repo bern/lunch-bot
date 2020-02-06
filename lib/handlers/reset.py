@@ -1,11 +1,5 @@
-from typing import List
-import zulip
-
 from lib import common
 from lib.handlers import HandlerParams
-from lib.models.message import Message
-from lib.models.user import User
-from lib.state_handler import StateHandler
 
 
 def handle_reset(params: HandlerParams):
