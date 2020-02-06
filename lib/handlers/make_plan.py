@@ -66,3 +66,7 @@ def handle_make_plan(params: HandlerParams):
         events.AlertLeavingGenerator(plan),
         plan.uuid,
     )
+
+    params.cron.add_event(
+        plan.time.timestamp(), events.DeletePlanGenerator(plan),
+    )

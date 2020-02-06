@@ -1,4 +1,5 @@
 from lib import common
+from lib.controllers.delete_plan import delete_plan
 from lib.handlers import HandlerParams
 
 
@@ -26,7 +27,6 @@ def handle_delete_plan(params: HandlerParams,):
         )
         return
 
-    plans = params.storage.get(params.storage.PLANS_ENTRY)
     matching_plans = common.get_matching_plans(
         params.args[1], params.storage, time=time
     )
@@ -51,13 +51,12 @@ def handle_delete_plan(params: HandlerParams,):
         return
 
     plan = matching_plans[0]
-    del plans[plan.uuid]
-    params.storage.put(params.storage.PLANS_ENTRY, plans)
-
+    delete_plan(
+        params.client, params.storage, plan,
+    )
+    params.cron.remove_event(plan.uuid)
     common.send_reply(
         params.client,
         params.message,
         "You've successfully deleted lunch {}.".format(common.render_plan_short(plan)),
     )
-
-    params.cron.remove_event(plan.uuid)

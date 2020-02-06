@@ -7,6 +7,7 @@ from typing import Optional
 import uuid
 import zulip
 
+from lib import common
 from lib.events import EventGenerator
 from lib.state_handler import StateHandler
 
@@ -110,8 +111,7 @@ class PersistentCron:
 
         events = self._get_persistent_events()
         rm_events = []
-        now = time.time()
-
+        now = common.get_now().timestamp()
         for event_id, event in events.items():
             if event.event_time < now:
                 rm_events.append(event_id)

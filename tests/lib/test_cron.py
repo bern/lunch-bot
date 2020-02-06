@@ -33,7 +33,9 @@ def test_persistent_cron_remove_event(mock_client, mock_storage, mock_user, make
         Plan("tjs", make_time(12, 30), [mock_user])
     )
     cron_event = CronEvent(
-        event_generator=leaving_generator, event_id=event_id, event_time=1337,
+        event_generator=leaving_generator,
+        event_id=event_id,
+        event_time=make_time(12, 15).timestamp(),
     )
 
     mock_storage.get.return_value = {

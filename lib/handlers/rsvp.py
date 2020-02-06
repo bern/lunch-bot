@@ -45,7 +45,7 @@ def handle_rsvp(params: HandlerParams):
             params.client,
             params.message,
             "There are multiple lunches with that lunch_id. Please reissue the command with the time of the lunch"
-            "you're interested in:\n{}".format(
+            " you're interested in:\n{}".format(
                 "\n".join([common.render_plan_short(plan) for plan in matching_plans]),
             ),
         )
